@@ -11,4 +11,71 @@
 			<add><![CDATA[<img><iframe>]]></add>
 		</operation>
 	</file>
+	<file name="$sourcedir/ScheduledTasks.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[// Deletes attachments based on its expire dates
+function scheduled_emailInactiveUsers()
+{
+	global $smcFunc, $modSettings;
+
+	// The mod must be enable
+	if (empty($modSettings['eIU_enable']))
+		return true;
+
+	// Today is a good day to do stuff don't you think?
+	$today = time();
+
+	// How many days must the user needs to be inactive to get the mail? lets stay safe here and declare a default value too.
+	$inactiveFor = 86400 * (!empty($modSettings['eIU_inactiveFor']) ? $modSettings['eIU_inactiveFor'] : 15);
+
+	// The user hasn't been logged in since the mail was sent huh? how many days are we gonna wait until the account gets deleted?
+	$sinceMail = 86400 * (!empty($modSettings['eIU_sinceMail']) ? $modSettings['eIU_sinceMail'] : 15);
+
+	// The groups from which the users will be fetched from.
+	$inGroups = !empty($modSettings['eIU_groups']) ? $modSettings['eIU_groups'] : array();
+
+	// Don't count the main admin group, AKA id_group 1
+	if (!empty($inGroups))
+		$inGroups = array_diff($inGroups, array(1));
+
+	// We gotta do a nasty thing here, we have to format a "FIND_IN_SET" for each selected group. Thanks to this we need PHP 5.3 or grater...
+	if (!empty($inGroups))
+		$additionalgroups = array_map(
+			function($k) {
+				return ' OR FIND_IN_SET('. $k .', additional_groups)';
+			}, $inGroups);
+
+	else
+		$additionalgroups = false;
+
+	// Right, we got all we need, lets do some expensive queries.
+	$request = $smcFunc['db_query']('', '
+			SELECT id_member, email_address, inactive_mail, member_name, real_name, last_login
+			FROM {db_prefix}members
+			WHERE inactive_mail IS NULL
+				AND last_login < {int:inactiveFor}
+				AND date_registered < {int:inactiveFor}
+				AND id_group IN({array_int:groups})
+					'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : '') .'
+				AND is_activated = 1
+				AND email_address is NOT NULL',
+			array(
+				'inactiveFor' => $today - $inactiveFor,
+				'groups' => $inGroups,
+			)
+		);
+
+	$message = array();
+
+	while($row = $smcFunc['db_fetch_assoc']($request))
+	{
+		// Lets create the message. Replace our wildcards with the actual data
+	}
+
+	return true;
+}
+]]></add>
+		</operation>
+	</file>
 </modification>
