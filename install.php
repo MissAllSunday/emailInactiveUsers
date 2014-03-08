@@ -23,38 +23,18 @@ db_extend('packages');
 
 if (empty($context['uninstalling']))
 {
-	$table = array(
-		'table_name' => '{db_prefix}inactive_users',
-		'columns' => array(
+		$smcFunc['db_add_column'](
+			'{db_prefix}members',
 			array(
-				'name' => 'id_member',
+				'name' => 'inactive_mail',
 				'type' => 'int',
 				'size' => 10,
-				'null' => false
+				'null' => false,
 			),
-			array(
-				'name' => 'mail',
-				'type' => 'int',
-				'size' => 1,
-				'null' => false
-			),
-			array(
-				'name' => 'delete',
-				'type' => 'int',
-				'size' => 1,
-				'null' => false
-			),
-		),
-		'indexes' => array(
-			array(
-				'type' => 'primary',
-				'columns' => array('id_member')
-			),
-		),
-		'if_exists' => 'ignore',
-		'error' => 'fatal',
-		'parameters' => array(),
-	);
+			array(),
+			'update',
+			null
+		);
 
 	// Create the scheduled task
 	$smcFunc['db_insert'](
