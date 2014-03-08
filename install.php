@@ -19,9 +19,6 @@ elseif (!defined('SMF'))
 
 global $smcFunc, $context;
 
-// Needs php 5.3 or greater
-versionCheck();
-
 db_extend('packages');
 
 if (empty($context['uninstalling']))
