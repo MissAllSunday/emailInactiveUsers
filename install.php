@@ -23,3 +23,60 @@ global $smcFunc, $context;
 versionCheck();
 
 db_extend('packages');
+
+if (empty($context['uninstalling']))
+{
+	$table = array(
+		'table_name' => '{db_prefix}inactive_users',
+		'columns' => array(
+			array(
+				'name' => 'id_member',
+				'type' => 'int',
+				'size' => 10,
+				'null' => false
+			),
+			array(
+				'name' => 'mail',
+				'type' => 'int',
+				'size' => 1,
+				'null' => false
+			),
+			array(
+				'name' => 'delete',
+				'type' => 'int',
+				'size' => 1,
+				'null' => false
+			),
+		),
+		'indexes' => array(
+			array(
+				'type' => 'primary',
+				'columns' => array('id_member')
+			),
+		),
+		'if_exists' => 'ignore',
+		'error' => 'fatal',
+		'parameters' => array(),
+	);
+
+	// Create the scheduled task
+	$smcFunc['db_insert'](
+		'insert',
+		'{db_prefix}scheduled_tasks',
+		array(
+			'id_task' => 'int',
+			'next_time' => 'int',
+			'time_offset' => 'int',
+			'time_regularity' => 'int',
+			'time_unit' => 'string',
+			'disabled' => 'int',
+			'task' => 'string',
+		),
+		array(
+			0, 0, 0, 1, 'd', 0, 'emailInactiveUsers',
+		),
+		array(
+			'id_task',
+		)
+	);
+}
