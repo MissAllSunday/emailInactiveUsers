@@ -10,14 +10,16 @@
 
 	<install for="2.0 - 2.0.99">
 		<readme parsebbc="true">readme.txt</readme>
-		<code>addHooks.php</code>
+		<code>hooks.php</code>
+		<database>install.php</database>
 		<modification>eIU.xml</modification>
 		<require-dir name="Themes" destination="$boarddir">Theme and Language files</require-dir>
 		<require-dir name="Sources" destination="$boarddir">Source files</require-dir>
 	</install>
 
 	<uninstall for="2.0 - 2.0.99">
-		<code>removeHooks.php</code>
+		<code>remove.php</code>
+		<database>install.php</database>
 		<modification reverse="true">eIU.xml</modification>
 		<remove-file name="$sourcedir/emailInactiveUsers.php" />
 		<remove-file name="$languagedir/emailInactiveUsers.english.php" />
