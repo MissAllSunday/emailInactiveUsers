@@ -12,4 +12,4 @@
 
 global $txt;
 
-$txt['emailInactiveUsers_'] = '';
+$txt['eIU_'] = '';
