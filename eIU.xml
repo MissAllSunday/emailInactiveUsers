@@ -17,14 +17,19 @@
 			<add><![CDATA[// Deletes attachments based on its expire dates
 function scheduled_emailInactiveUsers()
 {
-	global $smcFunc, $modSettings;
+	global $smcFunc, $modSettings, $txt;
 
 	// The mod must be enable
 	if (empty($modSettings['eIU_enable']))
 		return true;
 
+	loadLanguage('emailInactiveUsers');
+
 	// Today is a good day to do stuff don't you think?
 	$today = time();
+
+	// Is there any custom message?
+	$customMessage = !empty($modSettings['eIU_message']) ? $modSettings['eIU_message'] : $txt['eIU_message'];
 
 	// How many days must the user needs to be inactive to get the mail? lets stay safe here and declare a default value too.
 	$inactiveFor = 86400 * (!empty($modSettings['eIU_inactiveFor']) ? $modSettings['eIU_inactiveFor'] : 15);
@@ -71,6 +76,23 @@ function scheduled_emailInactiveUsers()
 	while($row = $smcFunc['db_fetch_assoc']($request))
 	{
 		// Lets create the message. Replace our wildcards with the actual data
+		$replacements = array(
+			'{user_name}' => $row['real_name'],
+			'{displayed_name}' => $row['member_name'],
+			'{last_login}' => timeformat($row['last_login']),
+		);
+
+		/* Split the replacements up into two arrays, for use with str_replace */
+		$find = array();
+		$replace = array();
+
+		foreach ($replacements as $f => $r)
+		{
+			$find[] = '{' . $f . '}';
+			$replace[] = $r;
+		}
+
+		$message[$row['id_member']] = str_replace($find, $replace, $customMessage);
 	}
 
 	return true;
