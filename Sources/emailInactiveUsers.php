@@ -12,3 +12,368 @@
 
 if (!defined('SMF'))
 	die('No direct access...');
+
+/*
+ * This function mimics SMF's Subs-Members::deleteMembers minus the checks and permissions.
+ * Since this is meant to be executed by the scheduled task and the scheduled task can be executed by anyone, including guest and bots,
+ * we gotta make sure no permissions/checks will be executed.
+ * Suffice to say, this function shouldn't be run/used as replacement for the original one.
+ */
+function eIU_deleteMembers($users)
+{
+	global $sourcedir, $modSettings, $smcFunc;
+
+	// Try give us a while to sort this out...
+	@set_time_limit(600);
+	// Try to get some more memory.
+	if (@ini_get('memory_limit') < 128)
+		@ini_set('memory_limit', '128M');
+
+	// If it's not an array, make it so!
+	if (!is_array($users))
+		$users = array($users);
+	else
+		$users = array_unique($users);
+
+	// Make sure there's no void user in here.
+	$users = array_diff($users, array(0));
+
+	// How many are they deleting?
+	if (empty($users))
+		return;
+
+	else
+		foreach ($users as $k => $v)
+			$users[$k] = (int) $v;
+
+	// Get their names for logging purposes.
+	$request = $smcFunc['db_query']('', '
+		SELECT id_member, member_name, CASE WHEN id_group = {int:admin_group} OR FIND_IN_SET({int:admin_group}, additional_groups) != 0 THEN 1 ELSE 0 END AS is_admin
+		FROM {db_prefix}members
+		WHERE id_member IN ({array_int:user_list})
+		LIMIT ' . count($users),
+		array(
+			'user_list' => $users,
+			'admin_group' => 1,
+		)
+	);
+	$admins = array();
+	$user_log_details = array();
+	while ($row = $smcFunc['db_fetch_assoc']($request))
+	{
+		if ($row['is_admin'])
+			$admins[] = $row['id_member'];
+
+		$user_log_details[$row['id_member']] = array($row['id_member'], $row['member_name']);
+	}
+	$smcFunc['db_free_result']($request);
+
+	if (empty($user_log_details))
+		return;
+
+	// Make sure they aren't trying to delete administrators if they aren't one.  But don't bother checking if it's just themself.
+	if (!empty($admins))
+		$users = array_diff($users, $admins);
+		foreach ($admins as $id)
+			unset($user_log_details[$id]);
+
+	// No one left?
+	if (empty($users))
+		return;
+
+	// Log the action - regardless of who is deleting it.
+	$log_inserts = array();
+	foreach ($user_log_details as $user)
+	{
+		// Add it to the administration log for future reference.
+		$log_inserts[] = array(
+			time(), 3, $user_info['id'], $user_info['ip'], 'delete_member',
+			0, 0, 0, serialize(array('member' => $user[0], 'name' => $user[1], 'member_acted' => $user_info['name'])),
+		);
+
+		// Remove any cached data if enabled.
+		if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2)
+			cache_put_data('user_settings-' . $user[0], null, 60);
+	}
+
+	// Do the actual logging...
+	if (!empty($log_inserts) && !empty($modSettings['modlog_enabled']))
+		$smcFunc['db_insert']('',
+			'{db_prefix}log_actions',
+			array(
+				'log_time' => 'int', 'id_log' => 'int', 'id_member' => 'int', 'ip' => 'string-16', 'action' => 'string',
+				'id_board' => 'int', 'id_topic' => 'int', 'id_msg' => 'int', 'extra' => 'string-65534',
+			),
+			$log_inserts,
+			array('id_action')
+		);
+
+	// Make these peoples' posts guest posts.
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}messages
+		SET id_member = {int:guest_id}, poster_email = {string:blank_email}
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'blank_email' => '',
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}polls
+		SET id_member = {int:guest_id}
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	// Make these peoples' posts guest first posts and last posts.
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}topics
+		SET id_member_started = {int:guest_id}
+		WHERE id_member_started IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}topics
+		SET id_member_updated = {int:guest_id}
+		WHERE id_member_updated IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_actions
+		SET id_member = {int:guest_id}
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_banned
+		SET id_member = {int:guest_id}
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_errors
+		SET id_member = {int:guest_id}
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	// Delete the member.
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}members
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+
+	// Delete the logs...
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_actions
+		WHERE id_log = {int:log_type}
+			AND id_member IN ({array_int:users})',
+		array(
+			'log_type' => 2,
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_boards
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_comments
+		WHERE id_recipient IN ({array_int:users})
+			AND comment_type = {string:warntpl}',
+		array(
+			'users' => $users,
+			'warntpl' => 'warntpl',
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_group_requests
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_karma
+		WHERE id_target IN ({array_int:users})
+			OR id_executor IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_mark_read
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_notify
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_online
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_subscribed
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}log_topics
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}collapsed_categories
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+
+	// Make their votes appear as guest votes - at least it keeps the totals right.
+	//!!! Consider adding back in cookie protection.
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}log_polls
+		SET id_member = {int:guest_id}
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	// Delete personal messages.
+	require_once($sourcedir . '/PersonalMessage.php');
+	deleteMessages(null, null, $users);
+
+	$smcFunc['db_query']('', '
+		UPDATE {db_prefix}personal_messages
+		SET id_member_from = {int:guest_id}
+		WHERE id_member_from IN ({array_int:users})',
+		array(
+			'guest_id' => 0,
+			'users' => $users,
+		)
+	);
+
+	// They no longer exist, so we don't know who it was sent to.
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}pm_recipients
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+
+	// Delete avatar.
+	require_once($sourcedir . '/ManageAttachments.php');
+	removeAttachments(array('id_member' => $users));
+
+	// It's over, no more moderation for you.
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}moderators
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}group_moderators
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+
+	// If you don't exist we can't ban you.
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}ban_items
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+
+	// Remove individual theme settings.
+	$smcFunc['db_query']('', '
+		DELETE FROM {db_prefix}themes
+		WHERE id_member IN ({array_int:users})',
+		array(
+			'users' => $users,
+		)
+	);
+
+	// These users are nobody's buddy nomore.
+	$request = $smcFunc['db_query']('', '
+		SELECT id_member, pm_ignore_list, buddy_list
+		FROM {db_prefix}members
+		WHERE FIND_IN_SET({raw:pm_ignore_list}, pm_ignore_list) != 0 OR FIND_IN_SET({raw:buddy_list}, buddy_list) != 0',
+		array(
+			'pm_ignore_list' => implode(', pm_ignore_list) != 0 OR FIND_IN_SET(', $users),
+			'buddy_list' => implode(', buddy_list) != 0 OR FIND_IN_SET(', $users),
+		)
+	);
+	while ($row = $smcFunc['db_fetch_assoc']($request))
+		$smcFunc['db_query']('', '
+			UPDATE {db_prefix}members
+			SET
+				pm_ignore_list = {string:pm_ignore_list},
+				buddy_list = {string:buddy_list}
+			WHERE id_member = {int:id_member}',
+			array(
+				'id_member' => $row['id_member'],
+				'pm_ignore_list' => implode(',', array_diff(explode(',', $row['pm_ignore_list']), $users)),
+				'buddy_list' => implode(',', array_diff(explode(',', $row['buddy_list']), $users)),
+			)
+		);
+	$smcFunc['db_free_result']($request);
+
+	// Make sure no member's birthday is still sticking in the calendar...
+	updateSettings(array(
+		'calendar_updated' => time(),
+	));
+
+	updateStats('member');
+}
