@@ -471,3 +471,12 @@ function eiu_membergroups()
 
 	return $membergroups;
 }
+
+/* DUH! WINNING! */
+function eiu_care(&$dummy)
+{
+	global $context;
+
+	if (isset($context['current_action']) && $context['current_action'] == 'credits')
+		$context['copyrights']['mods'][] = '<a href="http://missallsunday.com" target="_blank" title="Free SMF mods">Mail inactive users &copy Suki</a>';
+}
