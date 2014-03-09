@@ -40,7 +40,7 @@ function scheduled_emailInactiveUsers()
 	$sinceMail = 86400 * (!empty($modSettings['eiu_sinceMail']) ? $modSettings['eiu_sinceMail'] : 15);
 
 	// The groups from which the users will be fetched from.
-	$inGroups = !empty($modSettings['eiu_groups']) ? $modSettings['eiu_groups'] : array();
+	$inGroups = !empty($modSettings['eiu_groups']) ? explode(',', $modSettings['eiu_groups']) : array();
 
 	// Don't count the main admin group, AKA id_group 1
 	if (!empty($inGroups))
