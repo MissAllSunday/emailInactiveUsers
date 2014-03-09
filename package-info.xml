@@ -9,7 +9,7 @@
 	<type>modification</type>
 
 	<install for="2.0 - 2.0.99">
-		<readme parsebbc="true">readme.txt</readme>
+		<readme parsebbc="true">README.md</readme>
 		<code>hooks.php</code>
 		<database>install.php</database>
 		<modification>eIU.xml</modification>
