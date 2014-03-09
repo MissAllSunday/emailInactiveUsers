@@ -50,8 +50,8 @@ function eiu_settings(&$return_config = false)
 
 	$config_vars .= array(
 		array('large_text', 'eiu_message', '6" style="width:95%', 'subtext' => $txt['eiu_message_sub']),
-		array('text', 'eiu_subject', 'subtext' => $txt['eiu_subject_sub']),
 		array('check', 'eiu_html', 'size' => 3, 'subtext' => $txt['eiu_html_sub']),
+		array('text', 'eiu_subject', 'subtext' => $txt['eiu_subject_sub']),
 	);
 
 	if ($return_config)
