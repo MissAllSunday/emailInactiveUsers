@@ -469,7 +469,7 @@ function eiu_membergroups()
 
 	$smcFunc['db_free_result']($request);
 
-	return $membergroups;
+	return $return;
 }
 
 /* DUH! WINNING! */
