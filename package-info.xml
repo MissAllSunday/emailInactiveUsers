@@ -10,8 +10,8 @@
 
 	<install for="2.0 - 2.0.99">
 		<readme parsebbc="true">README.md</readme>
-		<code>hooks.php</code>
 		<database>install.php</database>
+		<code>hooks.php</code>
 		<modification>eIU.xml</modification>
 		<require-dir name="Themes" destination="$boarddir">Theme and Language files</require-dir>
 		<require-dir name="Sources" destination="$boarddir">Source files</require-dir>
