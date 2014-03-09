@@ -17,7 +17,8 @@
 			<add><![CDATA[// Deletes attachments based on its expire dates
 function scheduled_emailInactiveUsers()
 {
-	global $smcFunc, $modSettings, $txt, $sourcedir;
+	global $smcFunc, $modSettings, $txt, $sourcedir, $mbname;
+	global $scripturl;
 
 	// The mod must be enable
 	if (empty($modSettings['eIU_enable']))
@@ -79,8 +80,10 @@ function scheduled_emailInactiveUsers()
 		// Lets create the message. Replace our wildcards with the actual data.
 		$replacements = array(
 			'{user_name}' => $row['real_name'],
-			'{displayed_name}' => $row['member_name'],
+			'{display_name}' => $row['member_name'],
 			'{last_login}' => timeformat($row['last_login']),
+			'{forum_name}' => $mbname,
+			'{forum_url}' => $scripturl,
 		);
 
 		// Split the replacements up into two arrays, for use with str_replace.
@@ -132,6 +135,31 @@ function scheduled_emailInactiveUsers()
 		)
 	);
 
+	// Last step. Find the users marked for deletion.
+	$request = $smcFunc['db_query']('', '
+		SELECT id_member
+		FROM {db_prefix}members
+		WHERE inactive_mail IS  NOTNULL
+			AND last_login < {int:sinceMail}
+			AND date_registered < {int:inactiveFor}
+			AND id_group IN({array_int:groups})
+				'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : '') .'
+			AND is_activated = 1',
+		array(
+			'sinceMail' => (int) $today - $sinceMail,
+		)
+	);
+
+	$usersTodelete = array();
+
+	while($row = $smcFunc['db_fetch_assoc']($request))
+		$usersToDelete[] = $row['id_member'];
+
+	// Any lucky ones?
+	if (!empty($usersToDelete))
+		eU_deleteMembers();
+
+	// And... we're done!
 	return true;
 }
 ]]></add>
