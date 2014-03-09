@@ -128,7 +128,7 @@ function scheduled_emailInactiveUsers()
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET inactive_mail = ''
-		WHERE last_login > {int:{int:sinceMail}
+		WHERE last_login > {int:sinceMail}
 			AND inactive_mail is NOT NULL'),
 		array(
 			'sinceMail' => (int) $today - $sinceMail,
@@ -157,7 +157,12 @@ function scheduled_emailInactiveUsers()
 
 	// Any lucky ones?
 	if (!empty($usersToDelete))
-		eU_deleteMembers();
+	{
+		require_once($sourcedir . '/emailInactiveUsers.php');
+
+		// This is a very expensive function :(
+		eIU_deleteMembers($usersToDelete);
+	}
 
 	// And... we're done!
 	return true;
