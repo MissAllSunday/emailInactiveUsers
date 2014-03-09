@@ -43,16 +43,15 @@ function eiu_settings(&$return_config = false)
 	$groups = eiu_membergroups();
 
 	if (!empty($groups))
-		$config_vars['multiple'] = array('select', 'eiu_groups',
+		$config_vars[] = array('select', 'eiu_groups',
 			$groups,
 			'subtext' => $txt['eiu_groups_sub'],
+			'multiple' => true,
 		);
 
-	$config_vars .= array(
-		array('large_text', 'eiu_message', '6" style="width:95%', 'subtext' => $txt['eiu_message_sub']),
-		array('check', 'eiu_html', 'size' => 3, 'subtext' => $txt['eiu_html_sub']),
-		array('text', 'eiu_subject', 'subtext' => $txt['eiu_subject_sub']),
-	);
+	$config_vars[] = array('large_text', 'eiu_message', '6" style="width:95%', 'subtext' => $txt['eiu_message_sub']);
+	$config_vars[] = array('check', 'eiu_html', 'size' => 3, 'subtext' => $txt['eiu_html_sub']);
+	$config_vars[] = array('text', 'eiu_subject', 'subtext' => $txt['eiu_subject_sub']);
 
 	if ($return_config)
 		return $config_vars;
@@ -72,12 +71,7 @@ function eiu_settings(&$return_config = false)
 	{
 		checkSession();
 
-		// Gotta convert this array into a comma separated string.
-		if (isset($_POST['eiu_groups']) && !empty($_POST['eiu_groups']))
-			$_POST['eiu_groups'] = implode(',', $_POST['eiu_groups']);
-
-		$config_vars;
-		saveDBSettings($save_vars);
+		saveDBSettings($config_vars);
 		redirectexit('action=admin;area=modsettings;sa=eiu');
 	}
 
