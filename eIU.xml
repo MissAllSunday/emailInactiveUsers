@@ -30,8 +30,8 @@ function scheduled_emailInactiveUsers()
 	$today = time();
 
 	// Is there any custom message?
-	$customMessage = !empty($modSettings['eiu_message']) ? $modSettings['eiu_message'] : $txt['eiu_message'];
-	$customSubject = !empty($modSettings['eiu_subject']) ? $modSettings['eiu_subject'] : $txt['eiu_subject'];
+	$customMessage = !empty($modSettings['eiu_message']) ? $modSettings['eiu_message'] : $txt['eiu_custom_message'];
+	$customSubject = !empty($modSettings['eiu_subject']) ? $modSettings['eiu_subject'] : $txt['eiu_custom_subject'];
 
 	// How many days must the user needs to be inactive to get the mail? lets stay safe here and declare a default value too.
 	$inactiveFor = 86400 * (!empty($modSettings['eiu_inactiveFor']) ? $modSettings['eiu_inactiveFor'] : 15);
