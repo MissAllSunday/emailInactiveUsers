@@ -39,6 +39,21 @@ function eiu_settings(&$return_config = false)
 		array('int', 'eiu_sinceMail', 'size' => 3, 'subtext' => $txt['eiu_sinceMail_sub']),
 	);
 
+	// Are there any selectable groups?
+	$groups = eiu_membergroups();
+
+	if (!empty($groups))
+		$config_vars['multiple'] = array('select', 'eiu_groups',
+			$groups,
+			'subtext' => $txt['eiu_groups_sub'],
+		);
+
+	$config_vars .= array(
+		array('large_text', 'eiu_message', '6" style="width:95%', 'subtext' => $txt['eiu_message_sub']),
+		array('text', 'eiu_subject', 'subtext' => $txt['eiu_subject_sub']),
+		array('check', 'eiu_html', 'size' => 3, 'subtext' => $txt['eiu_html_sub']),
+	);
+
 	if ($return_config)
 		return $config_vars;
 
@@ -56,7 +71,12 @@ function eiu_settings(&$return_config = false)
 	if (isset($_GET['save']))
 	{
 		checkSession();
-		$save_vars = $config_vars;
+
+		// Gotta convert this array into a comma separated string.
+		if (isset($_POST['eiu_groups']) && !empty($_POST['eiu_groups']))
+			$_POST['eiu_groups'] = implode(',', $_POST['eiu_groups']);
+
+		$config_vars;
 		saveDBSettings($save_vars);
 		redirectexit('action=admin;area=modsettings;sa=eiu');
 	}
@@ -427,4 +447,27 @@ function eiu_deleteMembers($users)
 	));
 
 	updateStats('member');
+}
+
+function eiu_membergroups()
+{
+	global $smcFunc, $modSettings, $txt;
+
+	$request = $smcFunc['db_query']('', '
+		SELECT id_group, group_name
+		FROM {db_prefix}membergroups
+		WHERE id_group > {int:admin}',
+		array(
+			'admin' => 1,
+		)
+	);
+
+	$return = array();
+
+	while ($row = $smcFunc['db_fetch_assoc']($request))
+		$return[$row['id_group']] = $row['group_name'];
+
+	$smcFunc['db_free_result']($request);
+
+	return $membergroups;
 }
