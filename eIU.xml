@@ -8,7 +8,7 @@
 	<file name="$sourcedir/ScheduledTasks.php">
 		<operation>
 			<search position="end" />
-			<add><![CDATA[// Deletes attachments based on its expire dates
+			<add><![CDATA[// Send mails to inactive users, also delete them if they haven't logged in since then.
 function scheduled_emailInactiveUsers()
 {
 	global $smcFunc, $modSettings, $txt, $sourcedir, $mbname;
@@ -111,7 +111,7 @@ function scheduled_emailInactiveUsers()
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}members
 			SET inactive_mail = {int:sinceMail}
-			WHERE id_member IN ({array_int:id_members})'),
+			WHERE id_member IN ({array_int:id_members})',
 			array(
 				'sinceMail' => (int) $today + $sinceMail,
 				'id_members' => array_keys($messages),
@@ -124,7 +124,7 @@ function scheduled_emailInactiveUsers()
 		UPDATE {db_prefix}members
 		SET inactive_mail = {string:blank}
 		WHERE last_login > {int:sinceMail}
-			AND inactive_mail is NOT NULL'),
+			AND inactive_mail is NOT NULL',
 		array(
 			'sinceMail' => (int) $today - $sinceMail,
 			'blank' => '',
