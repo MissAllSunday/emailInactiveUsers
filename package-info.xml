@@ -3,7 +3,7 @@
 
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 
-	<name>email Inactive Users</name>
+	<name>Email Inactive Users</name>
 	<id>Suki:eIU</id>
 	<version>1.0</version>
 	<type>modification</type>
@@ -15,6 +15,7 @@
 		<modification>eIU.xml</modification>
 		<require-dir name="Themes" destination="$boarddir">Theme and Language files</require-dir>
 		<require-dir name="Sources" destination="$boarddir">Source files</require-dir>
+		<redirect url="$scripturl?action=admin;area=modsettings;sa=eiu" timeout="3000"></redirect>
 	</install>
 
 	<uninstall for="2.0 - 2.0.99">
