@@ -3,7 +3,7 @@
 /*
  * email Inactive Users
  *
- * @package eIU mod
+ * @package eiu mod
  * @version 1.0
  * @author Jessica González <suki@missallsunday.com>
  * @copyright Copyright (c) 2014 Jessica González

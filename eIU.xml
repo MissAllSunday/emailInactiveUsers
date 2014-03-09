@@ -2,7 +2,7 @@
 <!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
 
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
-	<id>Suki:eIU</id>
+	<id>Suki:eiu</id>
 	<version>1.0</version>
 
 	<file name="$sourcedir/">
@@ -21,7 +21,7 @@ function scheduled_emailInactiveUsers()
 	global $scripturl;
 
 	// The mod must be enable
-	if (empty($modSettings['eIU_enable']))
+	if (empty($modSettings['eiu_enable']))
 		return true;
 
 	loadLanguage('emailInactiveUsers');
@@ -30,17 +30,17 @@ function scheduled_emailInactiveUsers()
 	$today = time();
 
 	// Is there any custom message?
-	$customMessage = !empty($modSettings['eIU_message']) ? $modSettings['eIU_message'] : $txt['eIU_message'];
-	$customSubject = !empty($modSettings['eIU_subject']) ? $modSettings['eIU_subject'] : $txt['eIU_subject'];
+	$customMessage = !empty($modSettings['eiu_message']) ? $modSettings['eiu_message'] : $txt['eiu_message'];
+	$customSubject = !empty($modSettings['eiu_subject']) ? $modSettings['eiu_subject'] : $txt['eiu_subject'];
 
 	// How many days must the user needs to be inactive to get the mail? lets stay safe here and declare a default value too.
-	$inactiveFor = 86400 * (!empty($modSettings['eIU_inactiveFor']) ? $modSettings['eIU_inactiveFor'] : 15);
+	$inactiveFor = 86400 * (!empty($modSettings['eiu_inactiveFor']) ? $modSettings['eiu_inactiveFor'] : 15);
 
 	// The user hasn't been logged in since the mail was sent huh? how many days are we gonna wait until the account gets deleted?
-	$sinceMail = 86400 * (!empty($modSettings['eIU_sinceMail']) ? $modSettings['eIU_sinceMail'] : 15);
+	$sinceMail = 86400 * (!empty($modSettings['eiu_sinceMail']) ? $modSettings['eiu_sinceMail'] : 15);
 
 	// The groups from which the users will be fetched from.
-	$inGroups = !empty($modSettings['eIU_groups']) ? $modSettings['eIU_groups'] : array();
+	$inGroups = !empty($modSettings['eiu_groups']) ? $modSettings['eiu_groups'] : array();
 
 	// Don't count the main admin group, AKA id_group 1
 	if (!empty($inGroups))
@@ -110,7 +110,7 @@ function scheduled_emailInactiveUsers()
 
 		// Send the mail away!
 		foreach($messages as $m)
-			sendmail($m['mail'], $customSubject, $m['message'], null, null, !empty($modSettings['eIU_html']));
+			sendmail($m['mail'], $customSubject, $m['message'], null, null, !empty($modSettings['eiu_html']));
 
 		// OK, next thing, mark those users for deletion.
 		$smcFunc['db_query']('', '
@@ -162,7 +162,7 @@ function scheduled_emailInactiveUsers()
 		require_once($sourcedir . '/emailInactiveUsers.php');
 
 		// This is a very expensive function :(
-		eIU_deleteMembers($usersToDelete);
+		eiu_deleteMembers($usersToDelete);
 	}
 
 	// And... we're done!

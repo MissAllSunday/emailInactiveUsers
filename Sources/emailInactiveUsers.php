@@ -3,7 +3,7 @@
 /*
  * email Inactive Users
  *
- * @package eIU mod
+ * @package eiu mod
  * @version 1.0
  * @author Jessica González <suki@missallsunday.com>
  * @copyright Copyright (c) 2014 Jessica González
@@ -13,13 +13,64 @@
 if (!defined('SMF'))
 	die('No direct access...');
 
+function eiu_admin_areas(&$areas)
+{
+	global $txt;
+	loadLanguage('emailInactiveUsers');
+
+	$areas['config']['areas']['modsettings']['subsections']['eiu'] = array($txt['eiu_title']);
+}
+
+function eiu_modifications(&$sub_actions)
+{
+	global $context;
+
+	$sub_actions['eiu'] = 'eiu_settings';
+	$context[$context['admin_menu_name']]['tab_data']['tabs']['eiu'] = array();
+}
+
+function eiu_settings(&$return_config = false)
+{
+	global $context, $scripturl, $txt;
+
+	$config_vars = array(
+		array('desc', 'eiu_desc'),
+		array('int', 'eiu_inactiveFor', 'size' => 3, 'subtext' => $txt['eiu_inactiveFor_sub']),
+		array('int', 'eiu_sinceMail', 'size' => 3, 'subtext' => $txt['eiu_sinceMail_sub']),
+	);
+
+	if ($return_config)
+		return $config_vars;
+
+	$context['post_url'] = $scripturl . '?action=admin;area=modsettings;save;sa=eiu';
+	$context['settings_title'] = $txt['eiu_title'];
+
+	if (empty($config_vars))
+	{
+		$context['settings_save_dont_show'] = true;
+		$context['settings_message'] = '<div align="center">' . $txt['modification_no_misc_settings'] . '</div>';
+
+		return prepareDBSettingContext($config_vars);
+	}
+
+	if (isset($_GET['save']))
+	{
+		checkSession();
+		$save_vars = $config_vars;
+		saveDBSettings($save_vars);
+		redirectexit('action=admin;area=modsettings;sa=eiu');
+	}
+
+	prepareDBSettingContext($config_vars);
+}
+
 /*
  * This function mimics SMF's Subs-Members::deleteMembers minus the checks and permissions.
  * Since this is meant to be executed by the scheduled task and the scheduled task can be executed by anyone, including guest and bots,
  * we gotta make sure no permissions/checks will be executed.
  * Suffice to say, this function shouldn't be run/used as replacement for the original one.
  */
-function eIU_deleteMembers($users)
+function eiu_deleteMembers($users)
 {
 	global $sourcedir, $modSettings, $smcFunc;
 
