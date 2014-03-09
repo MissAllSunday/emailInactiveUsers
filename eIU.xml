@@ -99,6 +99,7 @@ function scheduled_emailInactiveUsers()
 		$messages[$row['id_member']] = array(
 			'message' => str_replace($find, $replace, $customMessage),
 			'mail' => $row['email_address'],
+			'subject' => str_replace($find, $replace, $customSubject),
 		);
 	}
 
@@ -110,7 +111,7 @@ function scheduled_emailInactiveUsers()
 
 		// Send the mail away!
 		foreach($messages as $m)
-			sendmail($m['mail'], $customSubject, $m['message'], null, null, !empty($modSettings['eiu_html']));
+			sendmail($m['mail'], $m['subject'], $m['message'], null, null, !empty($modSettings['eiu_html']));
 
 		// OK, next thing, mark those users for deletion.
 		$smcFunc['db_query']('', '
