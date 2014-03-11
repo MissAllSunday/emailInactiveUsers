@@ -27,6 +27,7 @@ function scheduled_emailInactiveUsers()
 	// Is there any custom message?
 	$customMessage = !empty($modSettings['eiu_message']) ? $modSettings['eiu_message'] : $txt['eiu_custom_message'];
 	$customSubject = !empty($modSettings['eiu_subject']) ? $modSettings['eiu_subject'] : $txt['eiu_custom_subject'];
+	$postLimit = !empty($modSettings['eiu_posts']) ? $modSettings['eiu_posts'] : 5;
 
 	// How many days must the user needs to be inactive to get the mail? lets stay safe here and declare a default value too.
 	$inactiveFor = 86400 * (!empty($modSettings['eiu_inactiveFor']) ? $modSettings['eiu_inactiveFor'] : 15);
@@ -56,6 +57,7 @@ function scheduled_emailInactiveUsers()
 			SELECT id_member, email_address, inactive_mail, member_name, real_name, last_login
 			FROM {db_prefix}members
 			WHERE inactive_mail IS NULL
+				AND posts <= {int:postLimit}
 				AND last_login < {int:inactiveFor}
 				AND date_registered < {int:inactiveFor}
 				AND id_group IN({array_int:groups})
@@ -65,6 +67,7 @@ function scheduled_emailInactiveUsers()
 			array(
 				'inactiveFor' => $today - $inactiveFor,
 				'groups' => $inGroups,
+				'postLimit' => $postLimit,
 			)
 		);
 
