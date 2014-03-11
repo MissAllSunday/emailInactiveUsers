@@ -37,6 +37,7 @@ function eiu_settings(&$return_config = false)
 		array('desc', 'eiu_desc'),
 		array('int', 'eiu_inactiveFor', 'size' => 3, 'subtext' => $txt['eiu_inactiveFor_sub']),
 		array('int', 'eiu_sinceMail', 'size' => 3, 'subtext' => $txt['eiu_sinceMail_sub']),
+		array('int', 'eiu_posts', 'size' => 3, 'subtext' => $txt['eiu_posts_sub']),
 	);
 
 	// Are there any selectable groups?
