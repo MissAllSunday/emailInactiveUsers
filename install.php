@@ -38,6 +38,19 @@ if (empty($context['uninstalling']))
 			null
 		);
 
+		$smcFunc['db_add_column'](
+			'{db_prefix}members',
+			array(
+				'name' => 'to_delete',
+				'type' => 'int',
+				'size' => 1,
+				'null' => false,
+			),
+			array(),
+			'update',
+			null
+		);
+
 	// Create the scheduled task
 	$smcFunc['db_insert'](
 		'insert',
