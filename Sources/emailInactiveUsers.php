@@ -18,7 +18,7 @@ function eiu_admin_areas(&$areas)
 	global $txt;
 	loadLanguage('emailInactiveUsers');
 
-	$admin_areas['config']['areas']['eiu'] = array(
+	$areas['config']['areas']['eiu'] = array(
 		'label' => $txt['eiu_title'],
 		'file' => 'emailInactiveUsers.php',
 		'function' => 'eiu_subactions',
@@ -126,11 +126,11 @@ function eiu_list()
 	<script type="text/javascript"><!-- // --><![CDATA[
 		function checkAll(){
 			var checkboxes = new Array();
-			checkboxes = document.getElementsByName(\'user\');
+			checkboxes = document.forms[\'userlist\'].getElementsByTagName(\'input\');
 
 			for (var i = 0; i < checkboxes.length; i++) {
-				if (checkboxes[i].type == \'checkbox\') {
-					checkboxes[i].setAttribute(\'checked\', true)
+				if (checkboxes[i].type == \'checkbox\' && checkboxes[i].name != \'check_all\') {
+					checkboxes[i].checked = !checkboxes[i].checked;
 				}
 			}
 		}
@@ -140,6 +140,8 @@ function eiu_list()
 	if (isset($_REQUEST['delete']) && !empty($_POST['user']))
 	{
 		$usersToMark = array();
+
+		checkSession('request', '', false);
 
 		// Safety.
 		foreach ($_POST['user'] as $u)
@@ -165,12 +167,16 @@ function eiu_list()
 
 function eiu_menu(&$menu_buttons)
 {
+	global $scripturl, $txt;
+
+	loadTemplate('emailInactiveUsers');
+
 	// Are there any users waiting for the final delete check?
 	$users = eiu_getUsers();
 
 	if (!empty($users))
 		$menu_buttons['admin']['sub_buttons']['eiu'] = array(
-			'title' => $txt['eiu_list_title'] . count($users),
+			'title' => $txt['eiu_list_title'] .' ['. count($users) .']',
 			'href' => $scripturl . '?action=admin;area=eiu;sa=list',
 			'show' => true,
 		);
@@ -178,14 +184,14 @@ function eiu_menu(&$menu_buttons)
 	// If someone wants to do something with this info, let them.
 	$context['eiu'] = $users;
 
-	eiu_care();
+	// eiu_care();
 }
 
 function eiu_getUsers()
 {
 	global $smcFunc;
 
-	if (($return = cache_get_data('eiu_users', 3600)) == null)
+	if (($usersTodelete = cache_get_data('eiu_users', 3600)) == null)
 	{
 		// Get the users marked for deletion.
 		$request = $smcFunc['db_query']('', '
@@ -211,10 +217,10 @@ function eiu_getUsers()
 		$smcFunc['db_free_result']($request);
 
 		// You're not going to use this that often so give it an entire hour.
-		cache_put_data('eiu_users', $return, 3600);
+		cache_put_data('eiu_users', $usersTodelete, 3600);
 	}
 
-	return $return;
+	return $usersTodelete;
 }
 
 /*

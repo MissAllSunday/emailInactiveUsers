@@ -12,7 +12,7 @@
 
 function template_user_list()
 {
-	global $context, $txt, $cripturl;
+	global $context, $txt, $scripturl;
 
 	// Any message?
 	if (!empty($context['meiu']))
@@ -59,7 +59,7 @@ function template_user_list()
 						', $txt['eiu_list_mail'] ,'
 					</th>
 					<th scope="col" class=" last_th">
-						', $txt['eiu_list_delete'] ,' <input type="checkbox" onchange="checkAll()" name="check_all">
+						', $txt['eiu_list_delete'] ,' <input type="checkbox" onchange="checkAll(this)" name="check_all" class="input_check">
 					</th>
 				</tr>
 			</thead>
@@ -69,16 +69,17 @@ function template_user_list()
 				echo '
 				<tr  id="letterm">
 					<td class="windowbg2">
-						', $user['name'] ,'
+						', $user['name'] ,'<br />
+						', $txt['eiu_list_posts'] ,' ', $user['posts'] ,'
 					</td>
 					<td class="windowbg lefttext">
-						', $user['login'] ,'
+						', $user['last_login'] ,'
 					</td>
 					<td class="windowbg2">
-						', $user['mail'] ,'
+						', $user['mail_sent'] ,'
 					</td>
 					<td class="windowbg2">
-						<input type="checkbox" name="user[]" class="userID" value="', $user['id'] ,'">
+						<input type="checkbox" name="user[]" class="input_check" value="', $user['id'] ,'">
 					</td>
 				</tr>
 			</tbody>
@@ -87,7 +88,7 @@ function template_user_list()
 		echo'
 			<div style="float:right;">
 				<input type="hidden" id="', $context['session_var'], '" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-				<input type="submit" value="', $txt['Breeze_noti_send'] ,'" class="button_submit" />
+				<input type="submit" value="', $txt['eiu_list_send'] ,'" class="button_submit" />
 			</div>
 			<div class="clear"></div>';
 
