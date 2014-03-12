@@ -22,7 +22,7 @@ function eiu_admin_areas(&$areas)
 		'label' => $txt['eiu_title'],
 		'file' => 'emailInactiveUsers.php',
 		'function' => 'eiu_subactions',
-		'icon' => 'posts.gif',
+		'icon' => 'members.gif',
 		'subsections' => array(
 			'general' => array($txt['eiu_general']),
 			'list' => array($txt['eiu_list'])
@@ -30,7 +30,38 @@ function eiu_admin_areas(&$areas)
 	);
 }
 
-function eiu_modifications(&$sub_actions)
+function eiu_subactions($return_config = false)
+{
+	global $txt, $scripturl, $context, $sourcedir;
+
+	loadLanguage('emailInactiveUsers');
+
+	require_once($sourcedir . '/ManageSettings.php');
+
+	$context['page_title'] = $txt['eiu_title'];
+
+	$subActions = array(
+		'general' => 'eiu_general',
+		'list' => 'eiu_list'
+	);
+
+	loadGeneralSettingParameters($subActions, 'general');
+
+	$context[$context['admin_menu_name']]['tab_data'] = array(
+		'title' => $context['page_title'],
+		'description' => $txt['eiu_desc'],
+		'tabs' => array(
+			'general' => array(
+			),
+			'list' => array(
+			)
+		),
+	);
+
+	$subActions[$_REQUEST['sa']]();
+}
+
+function eiu_general(&$sub_actions)
 {
 	global $context;
 
@@ -43,7 +74,6 @@ function eiu_settings(&$return_config = false)
 	global $context, $scripturl, $txt;
 
 	$config_vars = array(
-		array('desc', 'eiu_desc'),
 		array('int', 'eiu_inactiveFor', 'size' => 3, 'subtext' => $txt['eiu_inactiveFor_sub']),
 		array('int', 'eiu_sinceMail', 'size' => 3, 'subtext' => $txt['eiu_sinceMail_sub']),
 		array('int', 'eiu_posts', 'size' => 3, 'subtext' => $txt['eiu_posts_sub']),
