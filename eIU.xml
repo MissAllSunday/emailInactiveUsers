@@ -111,7 +111,7 @@ function scheduled_emailInactiveUsers()
 		foreach($messages as $m)
 			sendmail($m['mail'], $m['subject'], $m['message'], null, null, !empty($modSettings['eiu_html']));
 
-		// OK, next thing, mark those users for deletion.
+		// OK, next thing, mark those users.
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}members
 			SET inactive_mail = {int:sinceMail}
@@ -127,6 +127,7 @@ function scheduled_emailInactiveUsers()
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET inactive_mail = {string:blank}
+		SET to_delete = {string:blank}
 		WHERE last_login > {int:sinceMail}
 			AND inactive_mail is NOT NULL',
 		array(
@@ -135,20 +136,27 @@ function scheduled_emailInactiveUsers()
 		)
 	);
 
-	// Last step. Find the users marked for deletion.
+	// Next step. Find the users with mail sent and mark them for deletion.
 	$request = $smcFunc['db_query']('', '
-		SELECT id_member
-		FROM {db_prefix}members
+		UPDATE {db_prefix}members
+		SET to_delete = {int:toDelete}
 		WHERE inactive_mail IS  NOTNULL
-			AND last_login < {int:sinceMail}
-			AND date_registered < {int:inactiveFor}
-			AND id_group IN({array_int:groups})
-				'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : '') .'
-			AND is_activated = 1',
+		AND last_login < {int:sinceMail}',
 		array(
+			'toDelete' => 1,
 			'sinceMail' => (int) $today - $sinceMail,
 		)
 	);
+
+	// Last step. Find those user the admin has decided to delete.
+	$request = $smcFunc['db_query']('', '
+			SELECT id_member
+			FROM {db_prefix}members
+			WHERE to_delete = {int:toDelete}',
+			array(
+				'toDelete' => 2
+			)
+		);
 
 	$usersTodelete = array();
 
