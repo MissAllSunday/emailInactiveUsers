@@ -63,6 +63,7 @@ function scheduled_emailInactiveUsers()
 				AND id_group IN({array_int:groups})
 					'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : '') .'
 				AND is_activated = 1
+				AND to_delete < 3
 				AND email_address is NOT NULL',
 			array(
 				'inactiveFor' => $today - $inactiveFor,

@@ -16,9 +16,10 @@ function template_user_list()
 
 	// Any message?
 	if (!empty($context['meiu']))
-		echo '
+		foreach($context['meiu'] as $m)
+			echo '
 	<div class="windowbg" id="profile_success">
-		', $context['meiu'] ,'
+		', $txt['eiu_'. $m] ,'
 	</div>';
 
 	echo '
@@ -58,6 +59,9 @@ function template_user_list()
 					<th scope="col">
 						', $txt['eiu_list_mail'] ,'
 					</th>
+					<th scope="col">
+						', $txt['eiu_list_delete'] ,'
+					</th>
 					<th scope="col" class=" last_th">
 						', $txt['eiu_list_delete'] ,' <input type="checkbox" onchange="checkAll(this)" name="check_all" class="input_check">
 					</th>
@@ -77,6 +81,9 @@ function template_user_list()
 					</td>
 					<td class="windowbg2">
 						', $user['mail_sent'] ,'
+					</td>
+					<td class="windowbg2">
+						<input type="checkbox" name="dont[]" class="input_check" value="', $user['id'] ,'">
 					</td>
 					<td class="windowbg2">
 						<input type="checkbox" name="user[]" class="input_check" value="', $user['id'] ,'">

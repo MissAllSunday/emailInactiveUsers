@@ -120,48 +120,69 @@ function eiu_list()
 	$context['toDelete'] = eiu_getUsers();
 
 	// Any message?
-	$context['meiu'] = isset($_REQUEST['meiu']) ? $txt['eiu_meiu'] : false;
-
-	$context['insert_after_template'] .= '
-	<script type="text/javascript"><!-- // --><![CDATA[
-		function checkAll(){
-			var checkboxes = new Array();
-			checkboxes = document.forms[\'userlist\'].getElementsByTagName(\'input\');
-
-			for (var i = 0; i < checkboxes.length; i++) {
-				if (checkboxes[i].type == \'checkbox\' && checkboxes[i].name != \'check_all\') {
-					checkboxes[i].checked = !checkboxes[i].checked;
-				}
-			}
-		}
-	// ]]></script>';
+	if (!empty($_SESSION['meiu']))
+		$context['meiu'] = $_SESSION['meiu'];
+		unset($_SESSION['meiu']);
+	}
 
 	// Saving?
-	if (isset($_REQUEST['delete']) && !empty($_POST['user']))
+	if (isset($_REQUEST['delete']))
 	{
 		$usersToMark = array();
+		$usersToProtect = array();
+		$_SESSION['meiu'] = array();
 
 		checkSession('request', '', false);
 
-		// Safety.
-		foreach ($_POST['user'] as $u)
-			$usersToMark[] = (int) $u;
+		// Marking for deletion?
+		if (!empty($_POST['user']))
+		{
+			// Safety.
+			foreach ($_POST['user'] as $u)
+				$usersToMark[] = (int) $u;
 
-		$request = $smcFunc['db_query']('', '
-			UPDATE {db_prefix}members
-			SET to_delete = {int:toDelete}
-			WHERE id_member IN ({array_int:users})',
-			array(
-				'toDelete' => 2,
-				'users' => $usersToMark,
-			)
-		);
+			$request = $smcFunc['db_query']('', '
+				UPDATE {db_prefix}members
+				SET to_delete = {int:toDelete}
+				WHERE id_member IN ({array_int:users})',
+				array(
+					'toDelete' => 2,
+					'users' => $usersToMark,
+				)
+			);
 
-		// Clean the old cache entry
-		cache_put_data('eiu_users', null, 120);
+			// Tell the user about it
+			$SESSION['meiu'][] = 'deleted';
+		}
+
+		/* Marked as "untouchable"? code position is important here.
+		If you decide to check both deletion and don't delete for the same user, this one will be the one who will prevail. */
+		if (!empty($_POST['dont']))
+		{
+			// Safety.
+			foreach ($_POST['dont'] as $u)
+				$usersToProtect[] = (int) $u;
+
+			$request = $smcFunc['db_query']('', '
+				UPDATE {db_prefix}members
+				SET to_delete = {int:toDelete}
+				WHERE id_member IN ({array_int:users})',
+				array(
+					'toDelete' => 3,
+					'users' => $usersToProtect,
+				)
+			);
+
+			// Tell the user about it
+			$_SESSION['meiu'][] = 'dont';
+		}
+
+		// Clean the old cache entry only if there was ant change.
+		if (!empty($_POST['dont']) || !empty($_POST['user']))
+			cache_put_data('eiu_users', null, 120);
 
 		// Redirect and tell the user.
-		redirectexit('action=admin;area=eiu;sa=list'. (!empty($_POST['user']) ? ';meiu' : ''));
+		redirectexit('action=admin;area=eiu;sa=list');
 	}
 }
 
