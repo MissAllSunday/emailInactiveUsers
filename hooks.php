@@ -22,7 +22,7 @@ $hooks = array(
 	'integrate_pre_include' => '$sourcedir/emailInactiveUsers.php',
 	'integrate_admin_areas' => 'eiu_admin_areas',
 	'integrate_modify_modifications' => 'eiu_modifications',
-	//'integrate_menu_buttons' => 'eiu_care',
+	'integrate_menu_buttons' => 'eiu_notification',
 );
 
 foreach ($hooks as $hook => $function)
