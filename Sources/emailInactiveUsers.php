@@ -18,7 +18,16 @@ function eiu_admin_areas(&$areas)
 	global $txt;
 	loadLanguage('emailInactiveUsers');
 
-	$areas['config']['areas']['modsettings']['subsections']['eiu'] = array($txt['eiu_title']);
+	$admin_areas['config']['areas']['eiu'] = array(
+		'label' => $txt['eiu_title'],
+		'file' => 'emailInactiveUsers.php',
+		'function' => 'eiu_subactions',
+		'icon' => 'posts.gif',
+		'subsections' => array(
+			'general' => array($txt['eiu_general']),
+			'list' => array($txt['eiu_list'])
+		),
+	);
 }
 
 function eiu_modifications(&$sub_actions)
