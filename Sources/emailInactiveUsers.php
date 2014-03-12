@@ -112,7 +112,7 @@ function eiu_settings(&$return_config = false)
 
 function eiu_list()
 {
-	global $context; $smcFunc;
+	global $context, $txt, $smcFunc;
 
 	loadTemplate('emailInactiveUsers');
 
@@ -161,7 +161,7 @@ function eiu_list()
 		cache_put_data('eiu_users', null, 120);
 
 		// Redirect and tell the user.
-		redirectexit('action=admin;area=eiu;sa=list;meiu');
+		redirectexit('action=admin;area=eiu;sa=list'. (!empty($_POST['user']) ? ';meiu' : ''));
 	}
 }
 
@@ -170,6 +170,7 @@ function eiu_menu(&$menu_buttons)
 	global $scripturl, $txt;
 
 	loadTemplate('emailInactiveUsers');
+	loadLanguage('emailInactiveUsers');
 
 	// Are there any users waiting for the final delete check?
 	$users = eiu_getUsers();

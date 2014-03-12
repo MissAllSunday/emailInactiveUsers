@@ -45,7 +45,7 @@ function template_user_list()
 	else
 	{
 		echo '
-	<form action="', $scripturl ,'?action=admin;area=eiu;sa=list,delete" method="post" name="userlist" id="userList">
+	<form action="', $scripturl ,'?action=admin;area=eiu;sa=list;delete" method="post" name="userlist" id="userList">
 		<table class="table_grid" cellspacing="0" width="100%">
 			<thead>
 				<tr class="catbg">
@@ -65,8 +65,8 @@ function template_user_list()
 			</thead>
 			<tbody>';
 
-			foreach ($context['toDelete'] as $user)
-				echo '
+		foreach ($context['toDelete'] as $user)
+			echo '
 				<tr  id="letterm">
 					<td class="windowbg2">
 						', $user['name'] ,'<br />
@@ -81,7 +81,9 @@ function template_user_list()
 					<td class="windowbg2">
 						<input type="checkbox" name="user[]" class="input_check" value="', $user['id'] ,'">
 					</td>
-				</tr>
+				</tr>';
+
+		echo '
 			</tbody>
 		</table>';
 
