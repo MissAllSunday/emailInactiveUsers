@@ -125,7 +125,7 @@ function eiu_list()
 	loadTemplate('emailInactiveUsers');
 
 	$context['sub_template'] = 'user_list';
-	$context['toDelete'] = array();
+	$context['toDelete'] = eiu_getUsers();
 
 	// Saving?
 	if (isset($_REQUEST['delete']))
@@ -151,6 +151,7 @@ function eiu_getUsers()
 
 		while($row = $smcFunc['db_fetch_assoc']($request))
 			$usersTodelete[$row['id_member']] = array(
+				'id' => $row['id_member'],
 				'name' => !empty($row['member_name']) ? $row['member_name'] : $row['real_name'],
 				'last_login' => timeformat($row['last_login']),
 				'mail_sent' => timeformat($row['inactive_mail']),
@@ -163,7 +164,7 @@ function eiu_getUsers()
 		cache_put_data('eiu_users', $return, 3600);
 	}
 
-	return $return,
+	return $return;
 }
 
 /*
