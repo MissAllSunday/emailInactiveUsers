@@ -45,7 +45,7 @@ function template_user_list()
 	else
 	{
 		echo '
-	<form action=",delete" method="post" name="userlist" id="userList">
+	<form action="', $scripturl ,'?action=admin;area=eiu;sa=list,delete" method="post" name="userlist" id="userList">
 		<table class="table_grid" cellspacing="0" width="100%">
 			<thead>
 				<tr class="catbg">

@@ -41,7 +41,7 @@ function eiu_subactions($return_config = false)
 	$context['page_title'] = $txt['eiu_title'];
 
 	$subActions = array(
-		'general' => 'eiu_general',
+		'general' => 'eiu_settings',
 		'list' => 'eiu_list',
 	);
 
@@ -59,14 +59,6 @@ function eiu_subactions($return_config = false)
 	);
 
 	$subActions[$_REQUEST['sa']]();
-}
-
-function eiu_general(&$sub_actions)
-{
-	global $context;
-
-	$sub_actions['eiu'] = 'eiu_settings';
-	$context[$context['admin_menu_name']]['tab_data']['tabs']['eiu'] = array();
 }
 
 function eiu_settings(&$return_config = false)
@@ -149,7 +141,7 @@ function eiu_list()
 	{
 		$usersToMark = array();
 
-		// safety.
+		// Safety.
 		foreach ($_POST['user'] as $u)
 			$usersToMark[] = (int) $u;
 
@@ -163,9 +155,30 @@ function eiu_list()
 			)
 		);
 
+		// Clean the old cache entry
+		cache_put_data('eiu_users', null, 120);
+
 		// Redirect and tell the user.
-		redirectexit(';meiu');
+		redirectexit('action=admin;area=eiu;sa=list;meiu');
 	}
+}
+
+function eiu_menu(&$menu_buttons)
+{
+	// Are there any users waiting for the final delete check?
+	$users = eiu_getUsers();
+
+	if (!empty($users))
+		$menu_buttons['admin']['sub_buttons']['eiu'] = array(
+			'title' => $txt['eiu_list_title'] . count($users),
+			'href' => $scripturl . '?action=admin;area=eiu;sa=list',
+			'show' => true,
+		);
+
+	// If someone wants to do something with this info, let them.
+	$context['eiu'] = $users;
+
+	eiu_care();
 }
 
 function eiu_getUsers()
@@ -593,7 +606,7 @@ function eiu_membergroups()
 }
 
 /* DUH! WINNING! */
-function eiu_care(&$dummy)
+function eiu_care()
 {
 	global $context;
 
