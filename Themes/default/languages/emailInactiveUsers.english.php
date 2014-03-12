@@ -22,6 +22,7 @@ $txt['eiu_list_login'] = 'Last login';
 $txt['eiu_list_mail'] = 'mail sent';
 $txt['eiu_list_delete'] = 'Delete';
 $txt['eiu_list_send'] = 'Send';
+$txt['eiu_meiu'] = 'You have successfully marked these users for deletion, the next time the scheduled task is executed, those users will be deleted.';
 $txt['eiu_enable'] = 'Enable the email inactive users mod';
 $txt['eiu_enable_sub'] = 'This setting needs to be enable for the mod to work properly.';
 $txt['eiu_desc'] = ' This is your main admin panel for the email inactive users mod. <br/> This mod will add a scheduled task where users who haven\'t been active in x days will be sent a customizable email, a second check will be performed, if the user still hasn\'t been logged in yet, the mod will delete the account.<br /> The mod uses the mail queue, if you have a large mail queue it is advisable to set a large number of days to wait before deletion, this is because the deletion time period is set the day the scheduled task is executed, not the day the actual mail was sent.';

@@ -14,6 +14,13 @@ function template_user_list()
 {
 	global $context, $txt, $cripturl;
 
+	// Any message?
+	if (!empty($context['meiu']))
+		echo '
+	<div class="windowbg" id="profile_success">
+		', $context['meiu'] ,'
+	</div>';
+
 	echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
@@ -38,7 +45,7 @@ function template_user_list()
 	else
 	{
 		echo '
-	<form action="" method="post" name="userlist" id="userList">
+	<form action=",delete" method="post" name="userlist" id="userList">
 		<table class="table_grid" cellspacing="0" width="100%">
 			<thead>
 				<tr class="catbg">

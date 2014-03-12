@@ -127,6 +127,9 @@ function eiu_list()
 	$context['sub_template'] = 'user_list';
 	$context['toDelete'] = eiu_getUsers();
 
+	// Any message?
+	$context['meiu'] = isset($_REQUEST['meiu']) ? $txt['eiu_meiu'] : false;
+
 	$context['insert_after_template'] .= '
 	<script type="text/javascript"><!-- // --><![CDATA[
 		function checkAll(){
@@ -142,7 +145,27 @@ function eiu_list()
 	// ]]></script>';
 
 	// Saving?
-	if (isset($_REQUEST['delete']))
+	if (isset($_REQUEST['delete']) && !empty($_POST['user']))
+	{
+		$usersToMark = array();
+
+		// safety.
+		foreach ($_POST['user'] as $u)
+			$usersToMark[] = (int) $u;
+
+		$request = $smcFunc['db_query']('', '
+			UPDATE {db_prefix}members
+			SET to_delete = {int:toDelete}
+			WHERE id_member IN ({array_int:users})',
+			array(
+				'toDelete' => 2,
+				'users' => $usersToMark,
+			)
+		);
+
+		// Redirect and tell the user.
+		redirectexit(';meiu');
+	}
 }
 
 function eiu_getUsers()
