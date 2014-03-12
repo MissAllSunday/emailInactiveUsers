@@ -127,6 +127,20 @@ function eiu_list()
 	$context['sub_template'] = 'user_list';
 	$context['toDelete'] = eiu_getUsers();
 
+	$context['insert_after_template'] .= '
+	<script type="text/javascript"><!-- // --><![CDATA[
+		function checkAll(){
+			var checkboxes = new Array();
+			checkboxes = document.getElementsByName(\'user\');
+
+			for (var i = 0; i < checkboxes.length; i++) {
+				if (checkboxes[i].type == \'checkbox\') {
+					checkboxes[i].setAttribute(\'checked\', true)
+				}
+			}
+		}
+	// ]]></script>';
+
 	// Saving?
 	if (isset($_REQUEST['delete']))
 }

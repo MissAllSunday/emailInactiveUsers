@@ -52,7 +52,7 @@ function template_user_list()
 						', $txt['eiu_list_mail'] ,'
 					</th>
 					<th scope="col" class=" last_th">
-						', $txt['eiu_list_delete'] ,' <input type="checkbox" name="check_all">
+						', $txt['eiu_list_delete'] ,' <input type="checkbox" onchange="checkAll()" name="check_all">
 					</th>
 				</tr>
 			</thead>
