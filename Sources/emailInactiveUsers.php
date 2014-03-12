@@ -131,6 +131,41 @@ function eiu_list()
 	if (isset($_REQUEST['delete']))
 }
 
+function eiu_getUsers()
+{
+	global $smcFunc;
+
+	if (($return = cache_get_data('eiu_users', 3600)) == null)
+	{
+		// Get the users marked for deletion.
+		$request = $smcFunc['db_query']('', '
+				SELECT id_member, inactive_mail, last_login, member_name, real_name, posts
+				FROM {db_prefix}members
+				WHERE to_delete = {int:toDelete}',
+				array(
+					'toDelete' => 1
+				)
+			);
+
+		$usersTodelete = array();
+
+		while($row = $smcFunc['db_fetch_assoc']($request))
+			$usersTodelete[$row['id_member']] = array(
+				'name' => !empty($row['member_name']) ? $row['member_name'] : $row['real_name'],
+				'last_login' => timeformat($row['last_login']),
+				'mail_sent' => timeformat($row['inactive_mail']),
+				'posts' => $row['posts'],
+			);
+
+		$smcFunc['db_free_result']($request);
+
+		// You're not going to use this that often so give it an entire hour.
+		cache_put_data('eiu_users', $return, 3600);
+	}
+
+	return $return,
+}
+
 /*
  * This function mimics SMF's Subs-Members::deleteMembers minus the checks and permissions.
  * Since this is meant to be executed by the scheduled task and the scheduled task can be executed by anyone, including guest and bots,
