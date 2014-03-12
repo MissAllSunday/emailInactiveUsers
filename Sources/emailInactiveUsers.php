@@ -42,7 +42,7 @@ function eiu_subactions($return_config = false)
 
 	$subActions = array(
 		'general' => 'eiu_general',
-		'list' => 'eiu_list'
+		'list' => 'eiu_list',
 	);
 
 	loadGeneralSettingParameters($subActions, 'general');
@@ -116,6 +116,19 @@ function eiu_settings(&$return_config = false)
 	}
 
 	prepareDBSettingContext($config_vars);
+}
+
+function eiu_list()
+{
+	global $context; $smcFunc;
+
+	loadTemplate('emailInactiveUsers');
+
+	$context['sub_template'] = 'user_list';
+	$context['toDelete'] = array();
+
+	// Saving?
+	if (isset($_REQUEST['delete']))
 }
 
 /*
