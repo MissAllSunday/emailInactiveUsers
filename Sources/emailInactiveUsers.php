@@ -88,7 +88,7 @@ function eiu_settings(&$return_config = false)
 	if ($return_config)
 		return $config_vars;
 
-	$context['post_url'] = $scripturl . '?action=admin;area=modsettings;save;sa=eiu';
+	$context['post_url'] = $scripturl . '?action=admin;area=eiu;save;sa=general';
 	$context['settings_title'] = $txt['eiu_title'];
 
 	if (empty($config_vars))
@@ -104,7 +104,7 @@ function eiu_settings(&$return_config = false)
 		checkSession();
 
 		saveDBSettings($config_vars);
-		redirectexit('action=admin;area=modsettings;sa=eiu');
+		redirectexit('action=admin;area=eiu;sa=general');
 	}
 
 	prepareDBSettingContext($config_vars);
@@ -121,6 +121,7 @@ function eiu_list()
 
 	// Any message?
 	if (!empty($_SESSION['meiu']))
+	{
 		$context['meiu'] = $_SESSION['meiu'];
 		unset($_SESSION['meiu']);
 	}
@@ -130,7 +131,7 @@ function eiu_list()
 	{
 		$usersToMark = array();
 		$usersToProtect = array();
-		$_SESSION['meiu'] = array();
+		// $_SESSION['meiu'] = array();
 
 		checkSession('request', '', false);
 
@@ -152,7 +153,7 @@ function eiu_list()
 			);
 
 			// Tell the user about it
-			$SESSION['meiu'][] = 'deleted';
+			$_SESSION['meiu'][] = 'deleted';
 		}
 
 		/* Marked as "untouchable"? code position is important here.
@@ -314,31 +315,34 @@ function eiu_deleteMembers($users)
 		return;
 
 	// Log the action - regardless of who is deleting it.
-	$log_inserts = array();
-	foreach ($user_log_details as $user)
+	if (!empty($user_info['id']))
 	{
-		// Add it to the administration log for future reference.
-		$log_inserts[] = array(
-			time(), 3, $user_info['id'], $user_info['ip'], 'delete_member',
-			0, 0, 0, serialize(array('member' => $user[0], 'name' => $user[1], 'member_acted' => $user_info['name'])),
-		);
+		$log_inserts = array();
+		foreach ($user_log_details as $user)
+		{
+			// Add it to the administration log for future reference.
+			$log_inserts[] = array(
+				time(), 3, $user_info['id'], $user_info['ip'], 'delete_member',
+				0, 0, 0, serialize(array('member' => $user[0], 'name' => $user[1], 'member_acted' => $user_info['name'])),
+			);
 
-		// Remove any cached data if enabled.
-		if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2)
-			cache_put_data('user_settings-' . $user[0], null, 60);
+			// Remove any cached data if enabled.
+			if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2)
+				cache_put_data('user_settings-' . $user[0], null, 60);
+		}
+
+		// Do the actual logging...
+		if (!empty($log_inserts) && !empty($modSettings['modlog_enabled']))
+			$smcFunc['db_insert']('',
+				'{db_prefix}log_actions',
+				array(
+					'log_time' => 'int', 'id_log' => 'int', 'id_member' => 'int', 'ip' => 'string-16', 'action' => 'string',
+					'id_board' => 'int', 'id_topic' => 'int', 'id_msg' => 'int', 'extra' => 'string-65534',
+				),
+				$log_inserts,
+				array('id_action')
+			);
 	}
-
-	// Do the actual logging...
-	if (!empty($log_inserts) && !empty($modSettings['modlog_enabled']))
-		$smcFunc['db_insert']('',
-			'{db_prefix}log_actions',
-			array(
-				'log_time' => 'int', 'id_log' => 'int', 'id_member' => 'int', 'ip' => 'string-16', 'action' => 'string',
-				'id_board' => 'int', 'id_topic' => 'int', 'id_msg' => 'int', 'extra' => 'string-65534',
-			),
-			$log_inserts,
-			array('id_action')
-		);
 
 	// Make these peoples' posts guest posts.
 	$smcFunc['db_query']('', '

@@ -16,7 +16,7 @@ function template_user_list()
 
 	// Any message?
 	if (!empty($context['meiu']))
-		foreach($context['meiu'] as $m)
+		foreach($context['meiu'] as $dummy => $m)
 			echo '
 	<div class="windowbg" id="profile_success">
 		', $txt['eiu_'. $m] ,'
@@ -41,7 +41,8 @@ function template_user_list()
 		<span class="botslice">
 			<span></span>
 		</span>
-	</div>';
+	</div>
+	<br />';
 
 	else
 	{
@@ -60,10 +61,10 @@ function template_user_list()
 						', $txt['eiu_list_mail'] ,'
 					</th>
 					<th scope="col">
-						', $txt['eiu_list_delete'] ,'
+						', $txt['eiu_list_dont_delete'] ,'
 					</th>
 					<th scope="col" class=" last_th">
-						', $txt['eiu_list_delete'] ,' <input type="checkbox" onchange="checkAll(this)" name="check_all" class="input_check">
+						', $txt['eiu_list_delete'] ,'
 					</th>
 				</tr>
 			</thead>
