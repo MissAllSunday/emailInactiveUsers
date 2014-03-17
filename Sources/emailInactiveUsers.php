@@ -179,7 +179,7 @@ function eiu_list()
 			$_SESSION['meiu'][] = 'dont';
 		}
 
-		// Clean the old cache entry only if there was ant change.
+		// Clean the old cache entry only if there was any change.
 		if (!empty($_POST['dont']) || !empty($_POST['user']))
 			cache_put_data('eiu_users', null, 120);
 
@@ -215,7 +215,7 @@ function eiu_getUsers()
 {
 	global $smcFunc;
 
-	if (($usersTodelete = cache_get_data('eiu_users', 3600)) == null)
+	if (($usersToDelete = cache_get_data('eiu_users', 3600)) == null)
 	{
 		// Get the users marked for deletion.
 		$request = $smcFunc['db_query']('', '
@@ -227,10 +227,10 @@ function eiu_getUsers()
 				)
 			);
 
-		$usersTodelete = array();
+		$usersToDelete = array();
 
 		while($row = $smcFunc['db_fetch_assoc']($request))
-			$usersTodelete[$row['id_member']] = array(
+			$usersToDelete[$row['id_member']] = array(
 				'id' => $row['id_member'],
 				'name' => !empty($row['member_name']) ? $row['member_name'] : $row['real_name'],
 				'last_login' => timeformat($row['last_login']),
@@ -241,10 +241,10 @@ function eiu_getUsers()
 		$smcFunc['db_free_result']($request);
 
 		// You're not going to use this that often so give it an entire hour.
-		cache_put_data('eiu_users', $usersTodelete, 3600);
+		cache_put_data('eiu_users', $usersToDelete, 3600);
 	}
 
-	return $usersTodelete;
+	return $usersToDelete;
 }
 
 /*

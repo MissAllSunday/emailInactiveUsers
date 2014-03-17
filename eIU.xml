@@ -152,15 +152,15 @@ function scheduled_emailInactiveUsers()
 
 	// Last step. Find those user the admin has decided to delete.
 	$request = $smcFunc['db_query']('', '
-			SELECT id_member
-			FROM {db_prefix}members
-			WHERE to_delete = {int:toDelete}',
-			array(
-				'toDelete' => 2
-			)
-		);
+		SELECT id_member
+		FROM {db_prefix}members
+		WHERE to_delete = {int:toDelete}',
+		array(
+			'toDelete' => 2
+		)
+	);
 
-	$usersTodelete = array();
+	$usersToDelete = array();
 
 	while($row = $smcFunc['db_fetch_assoc']($request))
 		$usersToDelete[] = $row['id_member'];
