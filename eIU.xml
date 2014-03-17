@@ -56,15 +56,16 @@ function scheduled_emailInactiveUsers()
 	$request = $smcFunc['db_query']('', '
 			SELECT id_member, email_address, inactive_mail, member_name, real_name, last_login
 			FROM {db_prefix}members
-			WHERE inactive_mail IS NULL
+			WHERE inactive_mail = 0
 				AND posts <= {int:postLimit}
 				AND last_login < {int:inactiveFor}
 				AND date_registered < {int:inactiveFor}
-				AND id_group IN({array_int:groups})
-					'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : '') .'
 				AND is_activated = 1
 				AND to_delete < 3
-				AND email_address is NOT NULL',
+				AND email_address is NOT NULL
+				AND (id_group IN ({array_int:groups})
+					OR id_post_group IN ({array_int:groups})
+					'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : ''). ')',
 			array(
 				'inactiveFor' => $today - $inactiveFor,
 				'groups' => $inGroups,
