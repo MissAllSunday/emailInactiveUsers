@@ -61,7 +61,7 @@ function scheduled_emailInactiveUsers()
 				AND last_login < {int:inactiveFor}
 				AND date_registered < {int:inactiveFor}
 				AND is_activated = 1
-				AND to_delete < 3
+				AND to_delete = 0
 				AND email_address is NOT NULL
 				AND (id_group IN ({array_int:groups})
 					OR id_post_group IN ({array_int:groups})
