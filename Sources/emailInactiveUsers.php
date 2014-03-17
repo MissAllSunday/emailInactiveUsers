@@ -118,7 +118,12 @@ function eiu_list()
 	loadTemplate('emailInactiveUsers');
 
 	$context['sub_template'] = 'user_list';
-	$context['toDelete'] = eiu_getUsers();
+
+	// Get the users ready to be marked for deletion.
+	$context['toMark'] = eiu_getUsers();
+
+	// Get the users who are going to be deleted. The "2" indicates the user status, 1 equals mail sent, 2 marked for deletion and 3 is untouchable.
+	$context['toDelete'] = eiu_getUsers(2);
 
 	// Any message?
 	if (!empty($_SESSION['meiu']))
@@ -211,11 +216,11 @@ function eiu_menu(&$menu_buttons)
 	// eiu_care();
 }
 
-function eiu_getUsers()
+function eiu_getUsers($to_delete = 1)
 {
 	global $smcFunc;
 
-	if (($usersToDelete = cache_get_data('eiu_users', 3600)) == null)
+	if (($usersToDelete = cache_get_data('eiu_users-'. $to_delete, 3600)) == null)
 	{
 		// Get the users marked for deletion.
 		$request = $smcFunc['db_query']('', '
@@ -223,7 +228,7 @@ function eiu_getUsers()
 				FROM {db_prefix}members
 				WHERE to_delete = {int:toDelete}',
 				array(
-					'toDelete' => 1
+					'toDelete' => $to_delete
 				)
 			);
 
@@ -241,7 +246,7 @@ function eiu_getUsers()
 		$smcFunc['db_free_result']($request);
 
 		// You're not going to use this that often so give it an entire hour.
-		cache_put_data('eiu_users', $usersToDelete, 3600);
+		cache_put_data('eiu_users-'. $to_delete, $usersToDelete, 3600);
 	}
 
 	return $usersToDelete;

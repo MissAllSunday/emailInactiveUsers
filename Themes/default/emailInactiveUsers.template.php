@@ -70,7 +70,7 @@ function template_user_list()
 			</thead>
 			<tbody>';
 
-		foreach ($context['toDelete'] as $user)
+		foreach ($context['toMark'] as $user)
 			echo '
 				<tr  id="letterm">
 					<td class="windowbg2">

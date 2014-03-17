@@ -173,6 +173,9 @@ function scheduled_emailInactiveUsers()
 
 		// This is a very expensive function :(
 		eiu_deleteMembers($usersToDelete);
+
+		// Re-build the "to delete" cache.
+		cache_put_data('eiu_users-2', null, 3600);
 	}
 
 	// And... we're done!
