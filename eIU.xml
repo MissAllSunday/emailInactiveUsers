@@ -128,13 +128,12 @@ function scheduled_emailInactiveUsers()
 	// Next step. Find out if any user marked for deletion has logged in since then and reset their status.
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
-		SET inactive_mail = {string:blank}
-		SET to_delete = {string:blank}
+		SET inactive_mail = {int:zero}, to_delete = {int:zero}
 		WHERE last_login > {int:sinceMail}
-			AND inactive_mail is NOT NULL',
+			AND inactive_mail > {int:zero}',
 		array(
 			'sinceMail' => (int) $today - $sinceMail,
-			'blank' => '',
+			'zero' => 0,
 		)
 	);
 
