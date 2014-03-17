@@ -92,7 +92,7 @@ function scheduled_emailInactiveUsers()
 
 		foreach ($replacements as $f => $r)
 		{
-			$find[] = '{' . $f . '}';
+			$find[] = $f;
 			$replace[] = $r;
 		}
 
