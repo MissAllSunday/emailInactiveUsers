@@ -137,12 +137,13 @@ function scheduled_emailInactiveUsers()
 		)
 	);
 
-	// Next step. Find the users with mail sent and mark them for deletion.
+	// Next step. Find the users with mail sent and mark them for deletion if they haven't been marked by the admin to be deleted or as untouchables...
 	$request = $smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET to_delete = {int:toDelete}
 		WHERE inactive_mail > {int:zero}
-		AND last_login < {int:sinceMail}',
+		AND last_login < {int:sinceMail}
+		AND to_delete < 2',
 		array(
 			'toDelete' => 1,
 			'sinceMail' => (int) $today - $sinceMail,
