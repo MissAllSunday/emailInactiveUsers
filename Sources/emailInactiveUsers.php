@@ -66,6 +66,7 @@ function eiu_settings(&$return_config = false)
 	global $context, $scripturl, $txt;
 
 	$config_vars = array(
+		array('check', 'eiu_enable', 'subtext' => $txt['eiu_enable_sub']),
 		array('int', 'eiu_inactiveFor', 'size' => 3, 'subtext' => $txt['eiu_inactiveFor_sub']),
 		array('int', 'eiu_sinceMail', 'size' => 3, 'subtext' => $txt['eiu_sinceMail_sub']),
 		array('int', 'eiu_posts', 'size' => 3, 'subtext' => $txt['eiu_posts_sub']),

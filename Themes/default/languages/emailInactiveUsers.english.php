@@ -12,6 +12,8 @@
 
 global $txt;
 
+$txt['eiu_enable'] = 'Enable the mod';
+$txt['eiu_enable_sub'] = 'The master setting, needs to be on for the mod to work.';
 $txt['eiu_title'] = 'Email Inactive Users';
 $txt['eiu_general'] = 'General settings';
 $txt['eiu_list'] = 'User list';
