@@ -141,11 +141,12 @@ function scheduled_emailInactiveUsers()
 	$request = $smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET to_delete = {int:toDelete}
-		WHERE inactive_mail IS  NOTNULL
+		WHERE inactive_mail > {int:zero}
 		AND last_login < {int:sinceMail}',
 		array(
 			'toDelete' => 1,
 			'sinceMail' => (int) $today - $sinceMail,
+			'zero' => 0,
 		)
 	);
 
