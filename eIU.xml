@@ -113,53 +113,44 @@ function scheduled_emailInactiveUsers()
 		foreach($messages as $m)
 			sendmail($m['mail'], $m['subject'], $m['message'], null, null, !empty($modSettings['eiu_html']));
 
-		// OK, next thing, mark those users.
+		// OK, next thing, mark those users. Set inactive_mail to the date the user was added to the mail queue. Set to_delete as 1
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}members
-			SET inactive_mail = {int:sinceMail}
+			SET inactive_mail = {int:sinceMail}, to_delete = {int:to_delete}
 			WHERE id_member IN ({array_int:id_members})',
 			array(
-				'sinceMail' => (int) $today + $sinceMail,
+				'sinceMail' => $today,
 				'id_members' => array_keys($messages),
+				'to_delete' => 1,
 			)
 		);
 	}
 
-	// Next step. Find out if any user marked for deletion has logged in since then and reset their status.
+	// Next step. Find out if any user marked for potential deletion or deletion has logged in since then and reset their status. Don't reset the untouchable status...
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET inactive_mail = {int:zero}, to_delete = {int:zero}
 		WHERE last_login > {int:sinceMail}
-			AND inactive_mail > {int:zero}',
+			AND inactive_mail > {int:zero}
+			AND inactive_mail <= {int:two}',
 		array(
 			'sinceMail' => (int) $today - $sinceMail,
 			'zero' => 0,
+			'two' => 2,
 		)
 	);
 
-	// Next step. Find the users with mail sent and mark them for deletion if they haven't been marked by the admin to be deleted or as untouchables...
+	// Last step. Find those user the admin has decided to delete and see if the deletion date has been met.
 	$request = $smcFunc['db_query']('', '
-		UPDATE {db_prefix}members
-		SET to_delete = {int:toDelete}
-		WHERE inactive_mail > {int:zero}
-		AND last_login < {int:sinceMail}
-		AND to_delete < 2',
-		array(
-			'toDelete' => 1,
-			'sinceMail' => (int) $today - $sinceMail,
-			'zero' => 0,
-		)
-	);
-
-	// Last step. Find those user the admin has decided to delete.
-	$request = $smcFunc['db_query']('', '
-		SELECT id_member
-		FROM {db_prefix}members
-		WHERE to_delete = {int:toDelete}',
-		array(
-			'toDelete' => 2
-		)
-	);
+			SELECT id_member
+			FROM {db_prefix}members
+			WHERE to_delete = {int:toDelete}
+				AND inactive_mail < {int:today}',
+			array(
+				'toDelete' => 2,
+				'today' => $today,
+			)
+		);
 
 	$usersToDelete = array();
 
