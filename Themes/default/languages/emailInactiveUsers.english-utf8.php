@@ -51,7 +51,5 @@ $txt['eiu_subject'] = 'The subject for the mail';
 $txt['eiu_subject_sub'] = 'Cannot use HTML here, if let empty the mod will use the default value.';
 $txt['eiu_posts'] = 'Minimum posts made';
 $txt['eiu_posts_sub'] = 'The number of posts the user made, if an user has more posts than this limit (s)he won\'t be considered by the mod.<br />If left empty, the mod will use the default value: 5.';
-$txt['eiu_html'] = 'Use HTML on the mail body?';
-$txt['eiu_html_sub'] = 'If you are using HTML on the mail body, this setting must be check, otherwise the mod will send the raw code as text.';
 $txt['eiu_custom_message'] = 'Hello {user_name} we\'ve missed you at {forum_url} and we like you to come back and say hi again.';
 $txt['eiu_custom_subject'] = 'Hello from {forum_name}.';

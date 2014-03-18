@@ -111,7 +111,7 @@ function scheduled_emailInactiveUsers()
 
 		// Send the mail away!
 		foreach($messages as $m)
-			sendmail($m['mail'], $m['subject'], $m['message'], null, null, !empty($modSettings['eiu_html']));
+			sendmail($m['mail'], $m['subject'], $m['message'], null, null, false);
 
 		// OK, next thing, mark those users. Set inactive_mail to the date the user was added to the mail queue. Set to_delete as 1
 		$smcFunc['db_query']('', '
