@@ -25,11 +25,11 @@ function template_user_list()
 	echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
-			', $txt['eiu_list_title'] ,'
+			', $txt['eiu_list_title_potential'] ,'
 		</h3>
 	</div>';
 
-	if (empty($context['toDelete']))
+	if (empty($context['toMark']))
 		echo '
 	<div class="windowbg nopadding">
 		<span class="topslice">
@@ -52,6 +52,9 @@ function template_user_list()
 			<thead>
 				<tr class="catbg">
 					<th scope="col" class=" first_th">
+						', $txt['eiu_list_posts'] ,'
+					</th>
+					<th scope="col">
 						', $txt['eiu_list_name'] ,'
 					</th>
 					<th scope="col">
@@ -74,8 +77,10 @@ function template_user_list()
 			echo '
 				<tr  id="letterm">
 					<td class="windowbg2">
-						', $user['name'] ,'<br />
-						', $txt['eiu_list_posts'] ,' ', $user['posts'] ,'
+						', $user['posts'] ,'
+					</td>
+					<td class="windowbg2">
+						<a href="', $scripturl ,'?action=profile;u=', $user['id'] ,'" target="_blank">', $user['name'] ,'</a>
 					</td>
 					<td class="windowbg lefttext">
 						', $user['last_login'] ,'
@@ -104,5 +109,55 @@ function template_user_list()
 
 		echo '
 		</form>';
+	}
+
+	if (!empty($context['toDelete']))
+	{
+		echo '
+	<p />
+	<div class="cat_bar">
+		<h3 class="catbg">
+			', $txt['eiu_list_title'] ,'
+		</h3>
+	</div>
+	<table class="table_grid" cellspacing="0" width="100%">
+		<thead>
+			<tr class="catbg">
+				<th scope="col" class=" first_th">
+					', $txt['eiu_list_posts'] ,'
+				</th>
+				<th scope="col">
+					', $txt['eiu_list_name'] ,'
+				</th>
+				<th scope="col">
+					', $txt['eiu_list_login'] ,'
+				</th>
+				<th scope="col" class=" last_th">
+					', $txt['eiu_list_will_be_deleted'] ,'
+			</tr>
+		</thead>
+		<tbody>';
+
+		foreach ($context['toDelete'] as $user)
+			echo '
+			<tr  id="letterm">
+				<td class="windowbg2">
+					', $user['posts'] ,'
+				</td>
+				<td class="windowbg2">
+					<a href="', $scripturl ,'?action=profile;u=', $user['id'] ,'" target="_blank">', $user['name'] ,'</a>
+				</td>
+				<td class="windowbg lefttext">
+					', $user['last_login'] ,'
+				</td>
+				<td class="windowbg2">
+					', $user['mail_sent'] ,'
+				</td>
+			</tr>';
+
+		echo '
+		</tbody>
+	</table>
+	<br />';
 	}
 }

@@ -113,7 +113,7 @@ function eiu_settings(&$return_config = false)
 
 function eiu_list()
 {
-	global $context, $txt, $smcFunc;
+	global $context, $txt, $smcFunc, $modSettings;
 
 	loadTemplate('emailInactiveUsers');
 
@@ -122,7 +122,7 @@ function eiu_list()
 	// Get the users ready to be marked for deletion.
 	$context['toMark'] = eiu_getUsers();
 
-	// Get the users who are going to be deleted. The "2" indicates the user status, 1 equals mail sent, 2 marked for deletion and 3 is untouchable.
+	// Get the users who are going to be deleted. The "2" indicates the user status, 1 = mail sent, 2 = marked for deletion and 3 = untouchable.
 	$context['toDelete'] = eiu_getUsers(2);
 
 	// Any message?
@@ -137,7 +137,10 @@ function eiu_list()
 	{
 		$usersToMark = array();
 		$usersToProtect = array();
-		// $_SESSION['meiu'] = array();
+		$_SESSION['meiu'] = array();
+
+		// Back to the future!
+		$deletionDate = time() + (86400 * (!empty($modSettings['eiu_sinceMail']) ? $modSettings['eiu_sinceMail'] : 15));
 
 		checkSession('request', '', false);
 
@@ -148,17 +151,18 @@ function eiu_list()
 			foreach ($_POST['user'] as $u)
 				$usersToMark[] = (int) $u;
 
-			$request = $smcFunc['db_query']('', '
+			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}members
-				SET to_delete = {int:toDelete}
+				SET to_delete = {int:toDelete}, inactive_mail = {int:deletionDate}
 				WHERE id_member IN ({array_int:users})',
 				array(
 					'toDelete' => 2,
 					'users' => $usersToMark,
+					'deletionDate' => $deletionDate,
 				)
 			);
 
-			// Tell the user about it
+			// Tell the user about it.
 			$_SESSION['meiu'][] = 'deleted';
 		}
 
@@ -172,7 +176,7 @@ function eiu_list()
 
 			$request = $smcFunc['db_query']('', '
 				UPDATE {db_prefix}members
-				SET to_delete = {int:toDelete}
+				SET to_delete = {int:toDelete}, inactive_mail = 0
 				WHERE id_member IN ({array_int:users})',
 				array(
 					'toDelete' => 3,
@@ -180,13 +184,13 @@ function eiu_list()
 				)
 			);
 
-			// Tell the user about it
+			// Tell the user about it.
 			$_SESSION['meiu'][] = 'dont';
 		}
 
 		// Clean the old cache entry only if there was any change.
 		if (!empty($_POST['dont']) || !empty($_POST['user']))
-			cache_put_data('eiu_users', null, 120);
+			cache_put_data('eiu_users-1', null, 120);
 
 		// Redirect and tell the user.
 		redirectexit('action=admin;area=eiu;sa=list');
