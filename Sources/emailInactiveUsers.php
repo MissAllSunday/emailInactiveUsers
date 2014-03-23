@@ -121,9 +121,6 @@ function eiu_list()
 	// Get the users ready to be marked for deletion.
 	$context['toMark'] = eiu_getUsers();
 
-	// Get the users who are going to be deleted. The "2" indicates the user status, 1 = mail sent, 2 = marked for deletion and 3 = untouchable.
-	$context['toDelete'] = eiu_getUsers(2);
-
 	// Any message?
 	if (!empty($_SESSION['meiu']))
 	{
