@@ -16,3 +16,6 @@ emailInactiveUsers
 - Check which usergroups will be affected by this mod. Main admin group cannot be affected.
 
 ##### Needs PHP 5.3 or greater, SMF 2.0 or greater.
+
+##### License
+This mod is license under the [MPL 2.0 license](http://www.mozilla.org/MPL/2.0/).
