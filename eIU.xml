@@ -9,7 +9,21 @@
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
-// Send mails to inactive users, also delete them if they haven't logged in since then.
+/**
+ * Send mails to inactive users, also delete them if they haven't logged in since then.
+ *
+ * Column to_delete hold the current state of the account:
+ * 0 normal, up to date user
+ * 1 mail has been sent, user starts her/his grace period after mail was sent.
+ * 2 User has not been logged and her/his grace period is over, marked for admin deletion. These are the users who will appear on the mods user list.
+ * 3 Admin has marked this user for deletion and will be deleted next time the scheduled task is executed.
+ * 4 "Untouchable" means the user will not be fetched by the mod even if the account complies with all of the criteria to be marked for deletion.
+ * Column inactive_mail holds a different unix timestamp depending on the account current state:
+ * 0 if the user is up to date.
+ * It will hold the date the mail was sent to the mail queue when the user to_delete column is set to 1. This time is then used to check if their grace period is over or for resetting their status.
+ *
+ * @return boolean true The code inside the scheduled task was executed.
+ */
 function scheduled_emailInactiveUsers()
 {
 	global $smcFunc, $modSettings, $txt, $sourcedir, $mbname;
