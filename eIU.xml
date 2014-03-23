@@ -46,7 +46,7 @@ function scheduled_emailInactiveUsers()
 	// How many days must the user needs to be inactive to get the mail? lets stay safe here and declare a default value too.
 	$inactiveFor = 86400 * (!empty($modSettings['eiu_inactiveFor']) ? $modSettings['eiu_inactiveFor'] : 15);
 
-	// The user hasn't been logged in since the mail was sent huh? how many days are we gonna wait until the account gets deleted?
+	// The user hasn't been logged in since the mail was sent huh? how many days are we gonna wait until the account gets marked for deletion?
 	$sinceMail = 86400 * (!empty($modSettings['eiu_sinceMail']) ? $modSettings['eiu_sinceMail'] : 15);
 
 	// The groups from which the users will be fetched from.
@@ -62,6 +62,11 @@ function scheduled_emailInactiveUsers()
 			function($k) {
 				return ' OR FIND_IN_SET('. $k .', additional_groups)';
 			}, $inGroups);
+
+	// For those who still want to use this but don't have php 5.3
+	/* if (!empty($inGroups))
+		foreach ($inGroups as $k)
+			$additionalgroups[] = ' OR FIND_IN_SET('. $k .', additional_groups)'; */
 
 	else
 		$additionalgroups = false;
@@ -144,25 +149,48 @@ function scheduled_emailInactiveUsers()
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET inactive_mail = {int:zero}, to_delete = {int:zero}
-		WHERE last_login > {int:sinceMail}
-			AND inactive_mail > {int:zero}
-			AND inactive_mail <= {int:two}',
+		WHERE inactive_mail > {int:zero}
+			AND last_login > inactive_mail
+			AND to_delete >= {int:cero}
+			AND to_delete <= {int:tres}',
 		array(
-			'sinceMail' => (int) $today - $sinceMail,
-			'zero' => 0,
-			'two' => 2,
+			'cero' => 0,
+			'tres' => 3,
 		)
 	);
 
-	// Last step. Find those user the admin has decided to delete and see if the deletion date has been met.
+	/* Next. Find all users whose email was sent and see if their grace period time has expired, if so, mark them for deletion.
+	 * Include the group check since its possible the users has changed their group since then.
+	 * It is also possible for an user to log in at the very last minute that is, after the admin set the account for deletion but before the next scheduled task is executed... lucky bastard! */
+	$request = $smcFunc['db_query']('', '
+		UPDATE {db_prefix}members
+		SET to_delete = {int:dos}
+		WHERE inactive_mail > {int:cero}
+			AND last_login < inactive_mail + {int:sinceMail}
+			AND posts <= {int:postLimit}
+			AND date_registered < inactive_mail + {int:sinceMail}
+			AND is_activated = {int:uno}
+			AND to_delete = {int:uno}
+			AND (id_group IN ({array_int:groups})
+				OR id_post_group IN ({array_int:groups})
+				'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : ''). ')',
+		array(
+			'groups' => $inGroups,
+			'postLimit' => $postLimit,
+			'cero' => 0,
+			'uno' => 1,
+			'dos' => 2,
+			'sinceMail' => $sinceMail,
+		)
+	);
+
+	// Last step. Find those user the admin has decided to delete. No further checks here, it is all based on having "to_delete" set to 3.
 	$request = $smcFunc['db_query']('', '
 			SELECT id_member
 			FROM {db_prefix}members
-			WHERE to_delete = {int:toDelete}
-				AND inactive_mail < {int:today}',
+			WHERE to_delete = {int:toDelete}',
 			array(
-				'toDelete' => 2,
-				'today' => $today,
+				'toDelete' => 3,
 			)
 		);
 
@@ -174,6 +202,7 @@ function scheduled_emailInactiveUsers()
 	// Any lucky ones?
 	if (!empty($usersToDelete))
 	{
+		// Redundant but still need to be sure.
 		require_once($sourcedir . '/emailInactiveUsers.php');
 
 		// This is a very expensive function :(
