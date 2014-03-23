@@ -148,8 +148,8 @@ function scheduled_emailInactiveUsers()
 	// Next step. Find out if any user marked for potential deletion or deletion has logged in since then and reset their status. Don't reset the untouchable status...
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
-		SET inactive_mail = {int:zero}, to_delete = {int:zero}
-		WHERE inactive_mail > {int:zero}
+		SET inactive_mail = {int:cero}, to_delete = {int:cero}
+		WHERE inactive_mail > {int:cero}
 			AND last_login > inactive_mail
 			AND to_delete >= {int:cero}
 			AND to_delete <= {int:tres}',
