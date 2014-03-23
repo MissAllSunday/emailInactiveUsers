@@ -135,9 +135,6 @@ function eiu_list()
 		$usersToProtect = array();
 		$_SESSION['meiu'] = array();
 
-		// Back to the future!
-		$deletionDate = time() + (86400 * (!empty($modSettings['eiu_sinceMail']) ? $modSettings['eiu_sinceMail'] : 15));
-
 		checkSession('request', '', false);
 
 		// Marking for deletion?
@@ -149,12 +146,11 @@ function eiu_list()
 
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}members
-				SET to_delete = {int:toDelete}, inactive_mail = {int:deletionDate}
+				SET to_delete = {int:toDelete}
 				WHERE id_member IN ({array_int:users})',
 				array(
-					'toDelete' => 2,
+					'toDelete' => 3,
 					'users' => $usersToMark,
-					'deletionDate' => $deletionDate,
 				)
 			);
 
@@ -175,7 +171,7 @@ function eiu_list()
 				SET to_delete = {int:toDelete}, inactive_mail = 0
 				WHERE id_member IN ({array_int:users})',
 				array(
-					'toDelete' => 3,
+					'toDelete' => 4,
 					'users' => $usersToProtect,
 				)
 			);
@@ -186,7 +182,7 @@ function eiu_list()
 
 		// Clean the old cache entry only if there was any change.
 		if (!empty($_POST['dont']) || !empty($_POST['user']))
-			cache_put_data('eiu_users-1', null, 120);
+			cache_put_data('eiu_users-2', null, 120);
 
 		// Redirect and tell the user.
 		redirectexit('action=admin;area=eiu;sa=list');
@@ -216,7 +212,7 @@ function eiu_menu(&$menu_buttons)
 	// eiu_care();
 }
 
-function eiu_getUsers($to_delete = 1)
+function eiu_getUsers($to_delete = 2)
 {
 	global $smcFunc;
 
