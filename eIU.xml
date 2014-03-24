@@ -132,13 +132,13 @@ function scheduled_emailInactiveUsers()
 		foreach($messages as $m)
 			sendmail($m['mail'], $m['subject'], $m['message'], null, null, false);
 
-		// OK, next thing, mark those users. Set inactive_mail to the date the user was added to the mail queue. Set to_delete as 1
+		// OK, next thing, mark those users. Set inactive_mail to the date where their grace period will end. Set to_delete as 1
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}members
 			SET inactive_mail = {int:sinceMail}, to_delete = {int:to_delete}
 			WHERE id_member IN ({array_int:id_members})',
 			array(
-				'sinceMail' => $today,
+				'sinceMail' => $today + $sinceMail,
 				'id_members' => array_keys($messages),
 				'to_delete' => 1,
 			)
@@ -165,10 +165,10 @@ function scheduled_emailInactiveUsers()
 	$request = $smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
 		SET to_delete = {int:dos}
-		WHERE inactive_mail > {int:cero}
-			AND last_login < inactive_mail + {int:sinceMail}
+		WHERE inactive_mail < {int:today}
+			AND last_login < inactive_mail
 			AND posts <= {int:postLimit}
-			AND date_registered < inactive_mail + {int:sinceMail}
+			AND date_registered < {int:today}
 			AND is_activated = {int:uno}
 			AND to_delete = {int:uno}
 			AND (id_group IN ({array_int:groups})
@@ -180,7 +180,7 @@ function scheduled_emailInactiveUsers()
 			'cero' => 0,
 			'uno' => 1,
 			'dos' => 2,
-			'sinceMail' => $sinceMail,
+			'today' => $today,
 		)
 	);
 
