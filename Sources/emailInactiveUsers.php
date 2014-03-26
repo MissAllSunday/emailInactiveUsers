@@ -209,7 +209,7 @@ function eiu_menu(&$menu_buttons)
 	// If someone wants to do something with this info, let them.
 	$context['eiu'] = $users;
 
-	// eiu_care();
+	eiu_care();
 }
 
 function eiu_getUsers($to_delete = 2)
