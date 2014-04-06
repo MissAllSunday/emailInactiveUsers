@@ -41,6 +41,19 @@ if (empty($context['uninstalling']))
 		$smcFunc['db_add_column'](
 			'{db_prefix}members',
 			array(
+				'name' => 'sent_mail',
+				'type' => 'int',
+				'size' => 10,
+				'null' => false,
+			),
+			array(),
+			'update',
+			null
+		);
+
+		$smcFunc['db_add_column'](
+			'{db_prefix}members',
+			array(
 				'name' => 'to_delete',
 				'type' => 'int',
 				'size' => 1,
