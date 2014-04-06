@@ -132,13 +132,14 @@ function scheduled_emailInactiveUsers()
 		foreach($messages as $m)
 			sendmail($m['mail'], $m['subject'], $m['message'], null, null, false);
 
-		// OK, next thing, mark those users. Set inactive_mail to the date where their grace period will end. Set to_delete as 1
+		// OK, next thing, mark those users. Set sent_mail to the date the mail was sent, set inactive_mail to the future date where their grace period will end. Set to_delete as 1
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}members
-			SET inactive_mail = {int:sinceMail}, to_delete = {int:to_delete}
+			SET sent_mail = {int:today}, to_delete = {int:to_delete}, inactive_mail = {int:sinceMail}
 			WHERE id_member IN ({array_int:id_members})',
 			array(
 				'sinceMail' => $today + $sinceMail,
+				'today' => $today,
 				'id_members' => array_keys($messages),
 				'to_delete' => 1,
 			)
@@ -148,9 +149,9 @@ function scheduled_emailInactiveUsers()
 	// Next step. Find out if any user marked for potential deletion or deletion has logged in since then and reset their status. Don't reset the untouchable status...
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
-		SET inactive_mail = {int:cero}, to_delete = {int:cero}
-		WHERE inactive_mail > {int:cero}
-			AND last_login > inactive_mail
+		SET inactive_mail = {int:cero}, to_delete = {int:cero}, sent_mail = {int:cero}
+		WHERE sent_mail > {int:cero}
+			AND last_login > sent_mail
 			AND to_delete >= {int:cero}
 			AND to_delete <= {int:tres}',
 		array(
