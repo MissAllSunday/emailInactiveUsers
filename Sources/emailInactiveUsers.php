@@ -42,6 +42,7 @@ function eiu_subactions($return_config = false)
 
 	$subActions = array(
 		'general' => 'eiu_settings',
+		'list' => 'eiu_list',
 	);
 
 	loadGeneralSettingParameters($subActions, 'general');
@@ -56,13 +57,6 @@ function eiu_subactions($return_config = false)
 			)
 		),
 	);
-
-	// Add the list only if we want to remove the users.
-	if (empty($modSettings['eiu_disable_removal']))
-	{
-		$subActions['list'] = 'eiu_list';
-		$context[$context['admin_menu_name']]['tab_data']['tabs']['list'] = array();
-	}
 
 	$subActions[$_REQUEST['sa']]();
 }
@@ -227,7 +221,7 @@ function eiu_getUsers($to_delete = 2)
 	{
 		// Get the users marked for deletion.
 		$request = $smcFunc['db_query']('', '
-				SELECT id_member, inactive_mail, last_login, member_name, real_name, posts
+				SELECT id_member, inactive_mail, last_login, member_name, real_name, posts, sent_mail
 				FROM {db_prefix}members
 				WHERE to_delete = {int:toDelete}',
 				array(
@@ -242,7 +236,8 @@ function eiu_getUsers($to_delete = 2)
 				'id' => $row['id_member'],
 				'name' => !empty($row['member_name']) ? $row['member_name'] : $row['real_name'],
 				'last_login' => timeformat($row['last_login']),
-				'mail_sent' => timeformat($row['inactive_mail']),
+				'mail_sent' => timeformat($row['sent_mail']),
+				'grace' => timeformat($row['inactive_mail']),
 				'posts' => $row['posts'],
 			);
 
