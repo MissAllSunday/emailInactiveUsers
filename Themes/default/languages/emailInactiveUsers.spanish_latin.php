@@ -14,6 +14,8 @@ global $txt;
 
 $txt['eiu_enable'] = 'Activar la modificaci&oacute;n';
 $txt['eiu_enable_sub'] = 'El control maestro, necesita estar activdo para que el mod funcione correctamente.';
+$txt['eiu_disable_removal'] = 'Desactivar la la opción de remover usuarios';
+$txt['eiu_disable_removal_sub'] = 'Si se activa, el mod s&oacute;lo mandar&aacute; correos pero no borrar&aacute; ning&uacute;n usuario, al terminar su periodo de gracia y si el usuario no ha iniciado sesi&oacute;n, el mod volver&aacute; a marcar a el usuario para volver a enviar otro correo.';
 $txt['eiu_title'] = 'Enviar un correo a los usuarios inactivos';
 $txt['eiu_general'] = 'Configuraci&oacute;n principal';
 $txt['eiu_list'] = 'Lista de usuarios';

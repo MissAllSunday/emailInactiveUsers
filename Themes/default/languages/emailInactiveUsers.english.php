@@ -14,6 +14,8 @@ global $txt;
 
 $txt['eiu_enable'] = 'Enable the mod';
 $txt['eiu_enable_sub'] = 'The master setting, needs to be on for the mod to work.';
+$txt['eiu_disable_removal'] = 'Disable the deletion of users feature';
+$txt['eiu_disable_removal_sub'] = 'If checked, the mod will only send mails to those users who meet the criteria but will not delete them, after their grace period has ended and if the user hasn\'t log in yet, the mod will consider them again for another mail.';
 $txt['eiu_title'] = 'Email Inactive Users';
 $txt['eiu_general'] = 'General settings';
 $txt['eiu_list'] = 'User list';
