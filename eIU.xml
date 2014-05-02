@@ -160,12 +160,12 @@ function scheduled_emailInactiveUsers()
 		)
 	);
 
-	/* Next. Find all users whose email was sent and see if their grace period time has expired, if so, mark them for deletion.
+	/* Next. Find all users whose email was sent and see if their grace period time has expired, if so, mark them for deletion. If deletion is disabe then reset their status back to 0.
 	 * Include the group check since its possible the users has changed their group since then.
 	 * It is also possible for an user to log in at the very last minute that is, after the admin set the account for deletion but before the next scheduled task is executed... lucky bastard! */
 	$request = $smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
-		SET to_delete = {int:dos}
+		SET to_delete = '. (!empty($modSettings['eiu_disable_removal']) ? '{int:cero}' : '{int:dos}') .'
 		WHERE inactive_mail < {int:today}
 			AND last_login < inactive_mail
 			AND posts <= {int:postLimit}
@@ -184,6 +184,10 @@ function scheduled_emailInactiveUsers()
 			'today' => $today,
 		)
 	);
+
+	// We don't want to delete them...
+	if (!empty($modSettings['eiu_disable_removal']))
+		return true;
 
 	// Last step. Find those user the admin has decided to delete. No further checks here, it is all based on having "to_delete" set to 3.
 	$request = $smcFunc['db_query']('', '

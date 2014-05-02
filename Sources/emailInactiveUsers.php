@@ -83,7 +83,7 @@ function eiu_settings(&$return_config = false)
 			'multiple' => true,
 		);
 
-	$config_vars[] = array('large_text', 'eiu_message', '6" style="width:95%', 'subtext' => $txt['eiu_message_sub']);
+	$config_vars[] = array('large_text', 'eiu_message', '6', 'subtext' => $txt['eiu_message_sub']);
 	$config_vars[] = array('text', 'eiu_subject', 'subtext' => $txt['eiu_subject_sub']);
 
 	if ($return_config)
