@@ -18,6 +18,7 @@ emailInactiveUsers
 	- Mark the user for deletion. The user will be deleted the next time the scheduled task gets executed, there is a small chance for the user to skip deletion if (s)he logs in between the time the admin marked their account for deletion and the time the scheduled task gets executed, this timeframe, however could be very small and it cannot be larger than a full day.
 	- Mark the user as "untouchable" This special setting tells the mod to completely ignore this account, that is, the account won't be eligible for deletion even if it complies with all of the criteria.
 - A sub-menu in the admin button in the main menu will be added if the mod found 1 or more people ready to be marked for deletion.
+- Option for disabling users removal.
 
 ##### Needs PHP 5.3 or greater, SMF 2.0 or greater.
 
