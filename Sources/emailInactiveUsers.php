@@ -32,7 +32,7 @@ function eiu_admin_areas(&$areas)
 
 function eiu_subactions($return_config = false)
 {
-	global $txt, $scripturl, $context, $sourcedir;
+	global $txt, $scripturl, $context, $sourcedir, $modSettings;
 
 	loadLanguage('emailInactiveUsers');
 
@@ -42,7 +42,6 @@ function eiu_subactions($return_config = false)
 
 	$subActions = array(
 		'general' => 'eiu_settings',
-		'list' => 'eiu_list',
 	);
 
 	loadGeneralSettingParameters($subActions, 'general');
@@ -57,6 +56,13 @@ function eiu_subactions($return_config = false)
 			)
 		),
 	);
+
+	// Add the list only if we want to remove the users.
+	if (empty($modSettings['eiu_disable_removal']))
+	{
+		$subActions['list'] = 'eiu_list';
+		$context[$context['admin_menu_name']]['tab_data']['tabs']['list'] = array();
+	}
 
 	$subActions[$_REQUEST['sa']]();
 }

@@ -5,7 +5,7 @@
 
 	<name>Email Inactive Users</name>
 	<id>Suki:eIU</id>
-	<version>1.0</version>
+	<version>1.1</version>
 	<type>modification</type>
 
 	<install for="2.0 - 2.0.99">
