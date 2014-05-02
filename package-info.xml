@@ -25,6 +25,8 @@
 		<remove-file name="$sourcedir/emailInactiveUsers.php" />
 		<remove-file name="$languagedir/emailInactiveUsers.english.php" />
 		<remove-file name="$languagedir/emailInactiveUsers.english-utf8.php" />
+		<remove-file name="$languagedir/emailInactiveUsers.spanish_latin-utf8.php" />
+		<remove-file name="$languagedir/emailInactiveUsers.spanish_latin.php" />
 		<remove-file name="$themedir/emailInactiveUsers.template.php" />
 	</uninstall>
 </package-info>
