@@ -51,5 +51,5 @@ $txt['eiu_subject'] = 'El asunto del mensaje';
 $txt['eiu_subject_sub'] = 'No se puede usar HTML aqu&iacute;, si no se especifica ning&uacute;n valor, se usar&aacute; un valor predeterminado.';
 $txt['eiu_posts'] = 'Mensajes:';
 $txt['eiu_posts_sub'] = 'El n&uacute;mero de mensajes m&iacute;nimo que el usuario debe tener para ser tomado en cuenta para ser removido, si el/la usuario(a) tiene m&aacute;s mensajes que el n&uacute;mero establecido, no ser&aacute; tomado(a) en cuenta por el mod para ser removido(a).<br />Si se deja vacio, el mod usar&aacute; el valor predeterminado: 5.';
-$txt['eiu_custom_message'] = 'Hola {user_name} te hemos extrañado en {forum_url} y nos gustar&iacute;a que regresaras con nosotros.';
+$txt['eiu_custom_message'] = 'Hola {user_name} te hemos extra&ntilde;ado en {forum_url} y nos gustar&iacute;a que regresaras con nosotros.';
 $txt['eiu_custom_subject'] = 'Saludos desde {forum_name}.';
