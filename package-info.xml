@@ -14,7 +14,7 @@
 		<code>hooks.php</code>
 		<modification>eIU.xml</modification>
 		<require-dir name="Themes" destination="$boarddir">Theme and Language files</require-dir>
-		<require-dir name="Sources" destination="$boarddir">Source files</require-dir>
+		<require-file name="Sources/emailInactiveUsers.php" destination="$sourcedir">Source file</require-file>
 		<redirect url="$scripturl?action=admin;area=eiu" timeout="3000"></redirect>
 	</install>
 
