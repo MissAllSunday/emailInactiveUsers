@@ -19,6 +19,7 @@
 	</install>
 
 	<uninstall for="2.0 - 2.0.99">
+		<code>removeScheduledTask.php</code>
 		<code>remove.php</code>
 		<database>install.php</database>
 		<modification reverse="true">eIU.xml</modification>

@@ -86,16 +86,6 @@ if (empty($context['uninstalling']))
 	);
 }
 
-// Uninstalling?
-else
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}scheduled_tasks
-		WHERE task = {string:name}',
-		array(
-			'name' => 'emailInactiveUsers',
-		)
-	);
-
 function eiu_check()
 {
 	if (version_compare(PHP_VERSION, '5.3.0', '<'))
