@@ -53,8 +53,8 @@ function scheduled_emailInactiveUsers()
 	// The groups from which the users will be fetched from.
 	$inGroups = !empty($modSettings['eiu_groups']) ? unserialize($modSettings['eiu_groups']) : array();
 
-	// Theres gotta be at least 1 group.
-	if (empty($inGroups) || !in_array($inGroups))
+	// There's gotta be at least 1 group.
+	if (empty($inGroups) || !is_array($inGroups))
 		return true;
 
 	// Don't count the main admin group, AKA id_group 1
