@@ -12,7 +12,7 @@
 /**
  * Send mails to inactive users, also delete them if they haven't logged in since then.
  *
- * Column to_delete hold the current state of the account:
+ * Column to_delete holds the current state of the account:
  * 0 normal, up to date user
  * 1 mail has been sent, user starts her/his grace period after mail was sent.
  * 2 User has not been logged and her/his grace period is over, marked for admin deletion. These are the users who will appear on the mods user list.
@@ -37,6 +37,7 @@ function scheduled_emailInactiveUsers()
 
 	// Today is a good day to do stuff don't you think?
 	$today = time();
+	$additionalgroups = array();
 
 	// Is there any custom message?
 	$customMessage = !empty($modSettings['eiu_message']) ? $modSettings['eiu_message'] : $txt['eiu_custom_message'];
@@ -52,24 +53,22 @@ function scheduled_emailInactiveUsers()
 	// The groups from which the users will be fetched from.
 	$inGroups = !empty($modSettings['eiu_groups']) ? unserialize($modSettings['eiu_groups']) : array();
 
-	// Don't count the main admin group, AKA id_group 1
-	if (!empty($inGroups))
-		$inGroups = array_diff($inGroups, array(1));
+	// Theres gotta be at least 1 group.
+	if (empty($inGroups) || !in_array($inGroups))
+		return true;
 
-	// We gotta do a nasty thing here, we have to format a "FIND_IN_SET" for each selected group. Thanks to this we need PHP 5.3 or grater...
-	if (!empty($inGroups))
-		$additionalgroups = array_map(
-			function($k) {
-				return ' OR FIND_IN_SET('. $k .', additional_groups)';
-			}, $inGroups);
+	// Don't count the main admin group, AKA id_group 1
+	$inGroups = array_diff($inGroups, array(1));
+
+	// We gotta do a nasty thing here, we have to format a "FIND_IN_SET" for each selected group. Thanks to this we need PHP 5.3 
+	$additionalgroups = array_map(
+		function($k) {
+			return ' OR FIND_IN_SET('. $k .', additional_groups)';
+		}, $inGroups);
 
 	// For those who still want to use this but don't have php 5.3
-	/* if (!empty($inGroups))
-		foreach ($inGroups as $k)
+	/* foreach ($inGroups as $k)
 			$additionalgroups[] = ' OR FIND_IN_SET('. $k .', additional_groups)'; */
-
-	else
-		$additionalgroups = false;
 
 	// Right, we got all we need, lets do some expensive queries.
 	$request = $smcFunc['db_query']('', '
@@ -84,7 +83,7 @@ function scheduled_emailInactiveUsers()
 				AND email_address is NOT NULL
 				AND (id_group IN ({array_int:groups})
 					OR id_post_group IN ({array_int:groups})
-					'. (!empty($additionalgroups) ? implode(' ', $additionalgroups) : ''). ')',
+					'. (implode(' ', $additionalgroups)). ')',
 			array(
 				'inactiveFor' => $today - $inactiveFor,
 				'groups' => $inGroups,
