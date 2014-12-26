@@ -47,6 +47,23 @@ function template_user_list()
 	else
 	{
 		echo '
+	<script type="text/javascript">
+		function checkAll(theForm, cName, status) {
+			var theForm = document.getElementById(theForm);
+			var n=theForm.elements.length;
+			for (var i=0;i<n;i++){
+				if (theForm.elements[i].className.indexOf(cName) !=-1){
+					if (status.checked) {
+						theForm.elements[i].checked = true;
+					} else {
+						theForm.elements[i].checked = false;
+					}
+				}
+			}
+		}
+	</script>	
+		
+		
 	<form action="', $scripturl ,'?action=admin;area=eiu;sa=list;delete" method="post" name="userlist" id="userList">
 		<table class="table_grid" cellspacing="0" width="100%">
 			<thead>
@@ -67,34 +84,38 @@ function template_user_list()
 						', $txt['eiu_list_dont_delete'] ,'
 					</th>
 					<th scope="col" class=" last_th">
-						', $txt['eiu_list_delete'] ,'
+						', $txt['eiu_list_delete'] ,' <input type="checkbox" onclick="checkAll(\'userList\', \'term\', this);" />
 					</th>
 				</tr>
 			</thead>
 			<tbody>';
 
+		$alternate = true;	
+			
 		foreach ($context['toMark'] as $user)
 			echo '
-				<tr  id="letterm">
-					<td class="windowbg2">
+				<tr class="',(($alternate = !$alternate)?'windowbg':'windowbg2'),'">
+					<td>
 						', $user['posts'] ,'
 					</td>
-					<td class="windowbg2">
+					<td>
 						<a href="', $scripturl ,'?action=profile;u=', $user['id'] ,'" target="_blank">', $user['name'] ,'</a>
 					</td>
-					<td class="windowbg lefttext">
+					<td>
 						', $user['last_login'] ,'
 					</td>
-					<td class="windowbg2">
+					<td>
 						', $user['mail_sent'] ,'
 					</td>
-					<td class="windowbg2">
+					<td>
 						<input type="checkbox" name="dont[]" class="input_check" value="', $user['id'] ,'">
 					</td>
-					<td class="windowbg2">
-						<input type="checkbox" name="user[]" class="input_check" value="', $user['id'] ,'">
+					<td>
+						<input type="checkbox" name="user[]" class="input_check term" value="', $user['id'] ,'">
 					</td>
 				</tr>';
+
+				
 
 		echo '
 			</tbody>
