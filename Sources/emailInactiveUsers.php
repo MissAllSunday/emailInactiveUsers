@@ -217,7 +217,7 @@ function eiu_getUsers(int $to_delete = 2): array
 {
 	global $smcFunc;
 
-	if (($usersToDelete = cache_get_data('eiu_users-'. $to_delete, 3600)) == null)
+	if (($usersToDelete = cache_get_data('eiu_users-'. $to_delete, 3600)) === null)
 	{
 		// Get the users marked for deletion.
 		$request = $smcFunc['db_query']('', '
