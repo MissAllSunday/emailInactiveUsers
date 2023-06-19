@@ -1,7 +1,7 @@
 emailInactiveUsers
 ===================
 
-##### Sends emails to inactive users and deletes them if they haven't logged in on the forum.
+##### Send emails to inactive users and deletes them if they haven't logged in on the forum.
 
 ##### Some features:
 
@@ -20,7 +20,7 @@ emailInactiveUsers
 - A sub-menu in the admin button in the main menu will be added if the mod found 1 or more people ready to be marked for deletion.
 - Option for disabling users removal.
 
-##### Needs PHP 5.3 or greater, SMF 2.0 or greater.
+##### Needs PHP 7.4 or greater, SMF 2.1 or greater.
 
 ##### License
 This mod is license under the [MPL 2.0 license](http://www.mozilla.org/MPL/2.0/).
