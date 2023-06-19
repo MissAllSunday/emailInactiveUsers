@@ -17,6 +17,7 @@ function template_user_list()
 	// Any message?
 	if (!empty($context['meiu']))
 		foreach($context['meiu'] as $dummy => $m)
+
 			echo '
 	<div class="windowbg" id="profile_success">
 		', $txt['eiu_'. $m] ,'

@@ -210,7 +210,7 @@ function scheduled_emailInactiveUsers()
 		require_once($sourcedir . '/emailInactiveUsers.php');
 
 		// This is a very expensive function :(
-		eiu_deleteMembers($usersToDelete);
+		eiu_deleteMembers((array) $usersToDelete);
 
 		// Re-build the "to delete" cache.
 		cache_put_data('eiu_users-2', null, 3600);

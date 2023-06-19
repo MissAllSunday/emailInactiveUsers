@@ -18,12 +18,12 @@ elseif (!defined('SMF'))
 	exit('<b>Error:</b> Cannot install - please verify you put this in the same place as SMF\'s index.php.');
 
 // Everybody likes hooks
-$hooks = array(
+$hooks = [
 	'integrate_pre_include' => '$sourcedir/emailInactiveUsers.php',
 	'integrate_admin_areas' => 'eiu_admin_areas',
 	'integrate_modify_modifications' => 'eiu_modifications',
 	'integrate_menu_buttons' => 'eiu_menu',
-);
+];
 
 foreach ($hooks as $hook => $function)
 	add_integration_function($hook, $function);

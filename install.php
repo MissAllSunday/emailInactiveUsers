@@ -30,7 +30,7 @@ eiu_check();
 
 db_extend('packages');
 
-if (!empty(empty($context['uninstalling']))) {
+if (!empty($context['uninstalling'])) {
 	return;
 }
 
