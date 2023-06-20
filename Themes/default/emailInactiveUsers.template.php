@@ -10,18 +10,19 @@
  * @license http://www.mozilla.org/MPL/2.0/
  */
 
-function template_user_list()
+function template_user_list(): void
 {
 	global $context, $txt, $scripturl;
 
 	// Any message?
-	if (!empty($context['meiu']))
-		foreach($context['meiu'] as $dummy => $m)
-
+	if (!empty($context['meiu'])) {
+		foreach ($context['meiu'] as $messageKey) {
 			echo '
-	<div class="windowbg" id="profile_success">
-		', $txt['eiu_'. $m] ,'
+	<div class="infobox" id="profile_success">
+		', $txt['eiu_' . $messageKey], '
 	</div>';
+		}
+	}
 
 	echo '
 	<div class="cat_bar">
@@ -32,44 +33,36 @@ function template_user_list()
 
 	if (empty($context['toMark']))
 		echo '
-	<div class="windowbg nopadding">
-		<span class="topslice">
-			<span></span>
-		</span>
-		<div class="content">
-			', $txt['eiu_list_noUsers'] ,'
-		</div>
-		<span class="botslice">
-			<span></span>
-		</span>
-	</div>
-	<br />';
+	<p class="information">
+		', $txt['eiu_list_noUsers'] ,'
+	</div>';
 
 	else
 	{
 		echo '
 	<script type="text/javascript">
 		function checkAll(theForm, cName, status) {
-			var theForm = document.getElementById(theForm);
-			var n=theForm.elements.length;
-			for (var i=0;i<n;i++){
-				if (theForm.elements[i].className.indexOf(cName) !=-1){
-					if (status.checked) {
-						theForm.elements[i].checked = true;
-					} else {
-						theForm.elements[i].checked = false;
-					}
+			let theFormElement = document.getElementById(theForm);
+			let n = theForm.elements.length;
+			for (let i=0;i<n;i++){
+				if (theFormElement.elements[i].className.indexOf(cName) !==-1){
+					theForm.elements[i].checked = status.checked;
 				}
 			}
 		}
-	</script>	
+	</script>';
 		
-		
-	<form action="', $scripturl ,'?action=admin;area=eiu;sa=list;delete" method="post" name="userlist" id="userList">
-		<table class="table_grid" cellspacing="0" width="100%">
+		echo '
+<div class="windowbg noup">
+	<form 
+		action="'. $scripturl .'?action=admin;area=eiu;sa=list;delete"
+		method="post" 
+		name="userlist" 
+		id="userList">
+		<table class="table_grid">
 			<thead>
-				<tr class="catbg">
-					<th scope="col" class=" first_th">
+				<tr class="title_bar">
+					<th scope="col" >
 						', $txt['eiu_list_posts'] ,'
 					</th>
 					<th scope="col">
@@ -84,18 +77,17 @@ function template_user_list()
 					<th scope="col">
 						', $txt['eiu_list_dont_delete'] ,'
 					</th>
-					<th scope="col" class=" last_th">
-						', $txt['eiu_list_delete'] ,' <input type="checkbox" onclick="checkAll(\'userList\', \'term\', this);" />
+					<th scope="col" class="check centercol">
+						', $txt['eiu_list_delete'] ,'<br />
+ 						<input type="checkbox" onclick="checkAll(\'userList\', \'term\', this);" />
 					</th>
 				</tr>
 			</thead>
 			<tbody>';
 
-		$alternate = true;	
-			
 		foreach ($context['toMark'] as $user)
 			echo '
-				<tr class="',(($alternate = !$alternate)?'windowbg':'windowbg2'),'">
+				<tr class="windowbg">
 					<td>
 						', $user['posts'] ,'
 					</td>
@@ -108,28 +100,29 @@ function template_user_list()
 					<td>
 						', $user['mail_sent'] ,'
 					</td>
-					<td>
+					<td class="check centercol">
 						<input type="checkbox" name="dont[]" class="input_check" value="', $user['id'] ,'">
 					</td>
-					<td>
+					<td class="check centercol">
 						<input type="checkbox" name="user[]" class="input_check term" value="', $user['id'] ,'">
 					</td>
 				</tr>';
 
-				
-
 		echo '
 			</tbody>
-		</table>';
-
-		echo'
-			<div style="float:right;">
-				<input type="hidden" id="', $context['session_var'], '" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-				<input type="submit" value="', $txt['eiu_list_send'] ,'" class="button_submit" />
-			</div>
-			<div class="clear"></div>';
-
-		echo '
-		</form>';
+		</table>
+		<div class="flow_auto">
+			<div class="additional_row">
+				<input type="hidden" 
+					id="'. $context['session_var'] .'" 
+					name="'. $context['session_var'] .'"
+					value="'. $context['session_id'] .'" />
+				<input type="submit"
+					value="'. $txt['eiu_list_send'] .'"
+					class="button you_sure" />
+			</div>	
+		</div>
+	</form>
+</div>';
 	}
 }
