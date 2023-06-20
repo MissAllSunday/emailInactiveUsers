@@ -41,14 +41,12 @@ function template_user_list(): void
 	{
 		echo '
 	<script type="text/javascript">
-		function checkAll(theForm, cName, status) {
-			let theFormElement = document.getElementById(theForm);
-			let n = theForm.elements.length;
-			for (let i=0;i<n;i++){
-				if (theFormElement.elements[i].className.indexOf(cName) !==-1){
-					theForm.elements[i].checked = status.checked;
-				}
-			}
+		function checkAll(theForm) {
+            let checkType = jQuery(theForm).attr("class");
+          
+            jQuery(theForm).change(function () {
+				jQuery("input:checkbox." + checkType).prop("checked", jQuery(this).prop("checked"));
+			 });
 		}
 	</script>';
 		
@@ -76,10 +74,11 @@ function template_user_list(): void
 					</th>
 					<th scope="col">
 						', $txt['eiu_list_dont_delete'] ,'
+						<input type="checkbox" class="dont" onclick="checkAll(this);" />
 					</th>
 					<th scope="col" class="check centercol">
-						', $txt['eiu_list_delete'] ,'<br />
- 						<input type="checkbox" onclick="checkAll(\'userList\', \'term\', this);" />
+						', $txt['eiu_list_delete'] ,'
+ 						<input type="checkbox" class="delete" onclick="checkAll(this);" />
 					</th>
 				</tr>
 			</thead>
@@ -88,7 +87,7 @@ function template_user_list(): void
 		foreach ($context['toMark'] as $user)
 			echo '
 				<tr class="windowbg">
-					<td>
+					<td class="centercol">
 						', $user['posts'] ,'
 					</td>
 					<td>
@@ -101,10 +100,10 @@ function template_user_list(): void
 						', $user['mail_sent'] ,'
 					</td>
 					<td class="check centercol">
-						<input type="checkbox" name="dont[]" class="input_check" value="', $user['id'] ,'">
+						<input type="checkbox" name="dont[]" class="input_check dont" value="', $user['id'] ,'">
 					</td>
 					<td class="check centercol">
-						<input type="checkbox" name="user[]" class="input_check term" value="', $user['id'] ,'">
+						<input type="checkbox" name="user[]" class="input_check delete" value="', $user['id'] ,'">
 					</td>
 				</tr>';
 

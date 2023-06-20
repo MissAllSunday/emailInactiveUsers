@@ -662,8 +662,9 @@ function scheduled_emailInactiveUsers(): bool
 	global $scripturl;
 
 	// The mod must be enabled
-	if (empty($modSettings['eiu_enable']))
+	if (empty($modSettings['eiu_enable'])) {
 		return true;
+	}
 
 	loadLanguage('emailInactiveUsers');
 
