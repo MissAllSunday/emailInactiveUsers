@@ -683,7 +683,7 @@ function scheduled_emailInactiveUsers(): bool
 	$sinceMail = 86400 * (!empty($modSettings['eiu_sinceMail']) ? $modSettings['eiu_sinceMail'] : 15);
 
 	// The groups from which the users will be fetched from.
-	$inGroups = !empty($modSettings['eiu_groups']) ? unserialize($modSettings['eiu_groups']) : [];
+	$inGroups = !empty($modSettings['eiu_groups']) ? $smcFunc['json_decode']($modSettings['eiu_groups']) : [];
 
 	// There's gotta be at least 1 group.
 	if (empty($inGroups) || !is_array($inGroups))

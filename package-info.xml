@@ -12,7 +12,6 @@
 		<readme parsebbc="true">README.md</readme>
 		<database>install.php</database>
 		<code>hooks.php</code>
-		<modification>eIU.xml</modification>
 		<require-dir name="Themes" destination="$boarddir">Theme and Language files</require-dir>
 		<require-file name="Sources/emailInactiveUsers.php" destination="$sourcedir">Source file</require-file>
 		<redirect url="$scripturl?action=admin;area=eiu" timeout="3000"></redirect>
@@ -22,7 +21,6 @@
 		<code>removeScheduledTask.php</code>
 		<code>remove.php</code>
 		<database>install.php</database>
-		<modification reverse="true">eIU.xml</modification>
 		<remove-file name="$sourcedir/emailInactiveUsers.php" />
 		<remove-file name="$languagedir/emailInactiveUsers.english.php" />
 		<remove-file name="$languagedir/emailInactiveUsers.spanish_latin.php" />
