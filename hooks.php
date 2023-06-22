@@ -4,9 +4,9 @@
  * email Inactive Users
  *
  * @package eiu mod
- * @version 1.1.1
- * @author Jessica González <suki@missallsunday.com>
- * @copyright Copyright (c) 2014 Jessica González
+ * @version 1.2
+ * @author Michel Mendiola <suki@missallsunday.com>
+ * @copyright Copyright (c) 2023 Michel Mendiola
  * @license http://www.mozilla.org/MPL/2.0/
  */
 

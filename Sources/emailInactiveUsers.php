@@ -4,9 +4,9 @@
  * email Inactive Users
  *
  * @package eiu mod
- * @version 1.1.1
- * @author Jessica González <suki@missallsunday.com>
- * @copyright Copyright (c) 2014 Jessica González
+ * @version 1.2
+ * @author Michel Mendiola <suki@missallsunday.com>
+ * @copyright Copyright (c) 2023 Michel Mendiola
  * @license http://www.mozilla.org/MPL/2.0/
  */
 
@@ -23,7 +23,7 @@ function eiu_admin_areas(array &$areas): void
 		'label' => $txt['eiu_title'],
 		'file' => 'emailInactiveUsers.php',
 		'function' => 'eiu_subactions',
-		'icon' => 'members.gif',
+		'icon' => 'mail',
 		'subsections' => [
 			'general' => [$txt['eiu_general']],
 			'list' => [$txt['eiu_list']]
@@ -62,7 +62,7 @@ function eiu_subactions(bool $return_config = false): void
 	$subActions[$_REQUEST['sa']]();
 }
 
-function eiu_settings(bool $return_config = false): array|null
+function eiu_settings(bool $return_config = false): array
 {
 	global $context, $scripturl, $txt;
 
@@ -113,7 +113,7 @@ function eiu_settings(bool $return_config = false): array|null
 
 	prepareDBSettingContext($config_vars);
 
-	return null;
+	return [];
 }
 
 function eiu_list(): void
@@ -840,7 +840,7 @@ function scheduled_emailInactiveUsers(): bool
 	if (!empty($usersToDelete))
 	{
 		// This is a very expensive function :(
-		eiu_deleteMembers((array) $usersToDelete);
+		eiu_deleteMembers($usersToDelete);
 
 		// Re-build the "to delete" cache.
 		cache_put_data('eiu_users-2', null, 3600);

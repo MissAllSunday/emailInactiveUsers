@@ -20,7 +20,7 @@ emailInactiveUsers
 - A sub-menu in the admin button in the main menu will be added if the mod found 1 or more people ready to be marked for deletion.
 - Option for disabling users removal.
 
-##### Needs PHP 7.4 or greater, SMF 2.1 or greater.
+##### Needs PHP 7.1 or greater, SMF 2.1 or greater.
 
 ##### License
 This mod is license under the [MPL 2.0 license](http://www.mozilla.org/MPL/2.0/).

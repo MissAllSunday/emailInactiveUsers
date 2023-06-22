@@ -4,7 +4,7 @@
  * email Inactive Users
  *
  * @package eiu mod
- * @version 1.1.1
+ * @version 1.2
  * @author Jessica Gonz�lez <suki@missallsunday.com>
  * @copyright Copyright (c) 2014 Jessica Gonz�lez
  * @license http://www.mozilla.org/MPL/2.0/
