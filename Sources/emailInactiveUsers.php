@@ -272,7 +272,7 @@ function eiu_deleteMembers(array $users): void
 
 	// Get their names for logging purposes.
 	$request = $smcFunc['db_query']('', '
-	SELECT id_member, member_name, 
+	SELECT id_member, member_name
 	FROM {db_prefix}members
 	WHERE id_member IN ({array_int:user_list})
 	LIMIT {int:limit}',
@@ -849,4 +849,3 @@ function scheduled_emailInactiveUsers(): bool
 	// And... we're done!
 	return true;
 }
-
