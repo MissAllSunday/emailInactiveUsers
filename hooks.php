@@ -4,7 +4,7 @@
  * email Inactive Users
  *
  * @package eiu mod
- * @version 1.2
+ * @version 1.2.1
  * @author Michel Mendiola <suki@missallsunday.com>
  * @copyright Copyright (c) 2023 Michel Mendiola
  * @license http://www.mozilla.org/MPL/2.0/
@@ -21,7 +21,6 @@ elseif (!defined('SMF'))
 $hooks = [
 	'integrate_pre_include' => '$sourcedir/emailInactiveUsers.php',
 	'integrate_admin_areas' => 'eiu_admin_areas',
-	'integrate_modify_modifications' => 'eiu_modifications',
 	'integrate_menu_buttons' => 'eiu_menu',
 ];
 
